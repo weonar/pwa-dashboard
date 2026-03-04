@@ -116,11 +116,21 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
 // Удаление файла
 app.delete('/api/files/:filename', async (req, res) => {
   try {
-    const filePath = path.join(HDD_PATH, decodeURIComponent(req.params.filename));
+    const filename = decodeURIComponent(req.params.filename);
+    const filePath = path.join(HDD_PATH, filename);
 
-    // Проверка безопасности: убеждаемся, что файл находится в правильной папке
-    if (!filePath.startsWith(path.resolve(HDD_PATH))) {
+    // Проверка безопасности - файл должен быть в папке uploads
+    const resolvedPath = path.resolve(filePath);
+    const resolvedHddPath = path.resolve(HDD_PATH);
+
+    if (!resolvedPath.startsWith(resolvedHddPath)) {
       return res.status(400).json({ error: 'Недопустимый путь' });
+    }
+
+    // Проверка существования файла
+    if (!fsSync.existsSync(filePath)) {
+      console.error(`Файл не найден: ${filePath}`);
+      return res.status(404).json({ error: 'Файл не найден' });
     }
 
     await fs.unlink(filePath);

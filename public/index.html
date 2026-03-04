@@ -1047,9 +1047,13 @@
         if (response.ok) {
           showNotification('✅ Файл удален!');
           loadFiles();
+        } else {
+          const error = await response.json();
+          showNotification(`❌ Ошибка: ${error.error || 'Не удалось удалить файл'}`);
         }
       } catch (error) {
         console.error('Ошибка удаления файла:', error);
+        showNotification('❌ Ошибка удаления файла');
       }
     }
 
