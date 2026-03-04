@@ -485,6 +485,53 @@
       font-weight: 500;
     }
 
+    /* ==================== ЧАСЫ ==================== */
+    #clock {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+    }
+
+    .clock-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    .clock-display {
+      text-align: center;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 2px solid rgba(102, 126, 234, 0.3);
+      border-radius: 24px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
+    }
+
+    .clock-display .time {
+      font-size: 96px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-family: 'Monaco', 'Courier New', monospace;
+      letter-spacing: 4px;
+      margin-bottom: 16px;
+      text-shadow: 0 0 30px rgba(102, 126, 234, 0.2);
+    }
+
+    .clock-display .date {
+      font-size: 20px;
+      color: rgba(224, 224, 224, 0.6);
+      font-weight: 500;
+      letter-spacing: 1px;
+    }
+
     /* ==================== АДАПТИВ ==================== */
     @media (min-width: 768px) {
       .container {
@@ -604,6 +651,7 @@
     <!-- НАВИГАЦИЯ -->
     <nav>
       <button class="nav-btn active" data-screen="website">🌐 Сайт</button>
+      <button class="nav-btn" data-screen="clock">🕐 Часы</button>
       <button class="nav-btn" data-screen="clipboard">📋 Буфер</button>
       <button class="nav-btn" data-screen="notes">📝 Заметки</button>
       <button class="nav-btn" data-screen="files">📁 Файлы</button>
@@ -616,14 +664,24 @@
         <iframe src="https://hearts-together.vercel.app/"></iframe>
       </div>
 
-      <!-- ЭКРАН 2: БУФЕР ОБМЕНА -->
+      <!-- ЭКРАН 2: ЧАСЫ -->
+      <div id="clock" class="screen">
+        <div class="clock-container">
+          <div class="clock-display">
+            <div class="time" id="clockTime">00:00:00</div>
+            <div class="date" id="clockDate">Понедельник, 1 января</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ЭКРАН 3: БУФЕР ОБМЕНА -->
       <div id="clipboard" class="screen">
         <h2>📋 Буфер обмена</h2>
         <textarea placeholder="Введи текст для синхронизации между всеми устройствами..."></textarea>
         <button>💾 Сохранить</button>
       </div>
 
-      <!-- ЭКРАН 3: ЗАМЕТКИ -->
+      <!-- ЭКРАН 4: ЗАМЕТКИ -->
       <div id="notes" class="screen">
         <h2>📝 Заметки</h2>
         <div class="notes-mode">
@@ -637,7 +695,7 @@
         <button class="add-task-btn" style="display: none;">➕ Добавить задачу</button>
       </div>
 
-      <!-- ЭКРАН 4: ФАЙЛЫ -->
+      <!-- ЭКРАН 5: ФАЙЛЫ -->
       <div id="files" class="screen">
         <h2>📁 Файлы</h2>
         <div class="file-upload">
@@ -1089,6 +1147,29 @@
     // ==================== ЗАПУСК ====================
     connectWebSocket();
     loadFiles();
+
+    // ==================== ЧАСЫ ====================
+    function updateClock() {
+      const now = new Date();
+
+      // Время HH:MM:SS
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('clockTime').textContent = `${hours}:${minutes}:${seconds}`;
+
+      // Дата (День недели, число месяца)
+      const days = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+      const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+      const day = days[now.getDay()];
+      const date = now.getDate();
+      const month = months[now.getMonth()];
+      document.getElementById('clockDate').textContent = `${day}, ${date} ${month}`;
+    }
+
+    // Обновляем часы каждую секунду
+    updateClock();
+    setInterval(updateClock, 1000);
   </script>
 </body>
 </html>
