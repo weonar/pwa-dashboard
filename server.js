@@ -1,6 +1,6 @@
 // ==================== КОНФИГ ====================
 const PORT = 3000;
-const HDD_PATH = process.env.HDD_PATH || '/storage/42EA1AEFEA1ADF4B/uploads'; // Путь к папке на HDD/USB
+const HDD_PATH = process.env.HDD_PATH || './uploads'; // Путь к папке для файлов
 const DATA_DIR = './data';
 const NOTES_FILE = `${DATA_DIR}/notes.json`;
 const CLIPBOARD_FILE = `${DATA_DIR}/clipboard.json`;
@@ -19,9 +19,12 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-// Упорядочиваем данные
+// Упорядочиваем данные и создаем необходимые папки
 if (!fsSync.existsSync(DATA_DIR)) {
   fsSync.mkdirSync(DATA_DIR, { recursive: true });
+}
+if (!fsSync.existsSync(HDD_PATH)) {
+  fsSync.mkdirSync(HDD_PATH, { recursive: true });
 }
 
 // Хранилище клиентов

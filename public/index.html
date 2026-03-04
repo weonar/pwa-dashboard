@@ -781,31 +781,46 @@
 
     // ==================== ЗАМЕТКИ ====================
     function loadNotes(notesData) {
+      // При загрузке с сервера - только обновляем UI, не сохраняем
+      updateNotesModeUI(notesData.mode);
+
       if (notesData.mode === 'text') {
-        switchNotesMode('text');
         document.querySelector('#notes textarea').value = notesData.content || '';
       } else if (notesData.mode === 'tasks') {
-        switchNotesMode('tasks');
         renderTasks(notesData.tasks || []);
       }
+
+      // Обновляем локальные данные после загрузки с сервера
+      notesData = {
+        mode: notesData.mode,
+        content: notesData.content || '',
+        tasks: notesData.tasks || []
+      };
+    }
+
+    // Обновляет только UI режима без сохранения на сервер
+    function updateNotesModeUI(mode) {
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+
+      const textarea = document.querySelector('#notes textarea');
+      textarea.classList.toggle('active', mode === 'text');
+      document.querySelector('.tasks-container').classList.toggle('active', mode === 'tasks');
+      document.querySelector('.add-task-btn').style.display = mode === 'tasks' ? 'block' : 'none';
     }
 
     function switchNotesMode(mode) {
-      // Сохраняем текущие данные
+      // Сохраняем текущие данные перед переключением
       const textarea = document.querySelector('#notes textarea');
       if (textarea.classList.contains('active')) {
         notesData.content = textarea.value;
       }
 
-      // Переключаемся
-      document.querySelectorAll('.mode-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.mode === mode);
-      });
+      // Обновляем UI
+      updateNotesModeUI(mode);
 
-      textarea.classList.toggle('active', mode === 'text');
-      document.querySelector('.tasks-container').classList.toggle('active', mode === 'tasks');
-      document.querySelector('.add-task-btn').style.display = mode === 'tasks' ? 'block' : 'none';
-
+      // Обновляем режим в данных и сохраняем
       notesData.mode = mode;
       saveNotes();
     }
