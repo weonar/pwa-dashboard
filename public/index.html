@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#667eea">
+  <meta name="description" content="Local PWA Dashboard">
+  <title>PWA Dashboard</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23667eea;stop-opacity:1' /><stop offset='100%' style='stop-color:%23764ba2;stop-opacity:1' /></linearGradient></defs><rect fill='url(%23grad)' width='192' height='192' rx='40'/><text x='96' y='130' font-size='100' fill='white' text-anchor='middle' font-weight='bold'>D</text></svg>">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+      color: #e0e0e0;
+      overflow: hidden;
+    }
+
+    /* ==================== ОСНОВНОЙ КОНТЕЙНЕР ==================== */
+    .container {
+      display: flex;
+      height: 100vh;
+      flex-direction: column;
+      background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+    }
+
+    /* ==================== НАВИГАЦИЯ ==================== */
+    nav {
+      display: flex;
+      background: rgba(20, 20, 35, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 12px 8px;
+      gap: 8px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    nav button {
+      flex: 1;
+      min-width: 70px;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #a0a0b0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+      backdrop-filter: blur(10px);
+    }
+
+    nav button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    nav button.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+    }
+
+    /* ==================== СОДЕРЖАНИЕ ==================== */
+    .content-wrapper {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .screen {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* ==================== IFRAME САЙТ ==================== */
+    #website {
+      border-radius: 16px 16px 0 0;
+      overflow: hidden;
+    }
+
+    #website iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* ==================== БУФЕР ОБМЕНА ==================== */
+    #clipboard {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+    }
+
+    #clipboard h2 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    #clipboard textarea {
+      flex: 1;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #e0e0e0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 14px;
+      resize: none;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #clipboard textarea:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(102, 126, 234, 0.5);
+      box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+    }
+
+    #clipboard button {
+      padding: 14px 24px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    }
+
+    #clipboard button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+    }
+
+    #clipboard button:active {
+      transform: translateY(-1px);
+    }
+
+    /* ==================== ЗАМЕТКИ ==================== */
+    #notes {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+    }
+
+    #notes h2 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .notes-mode {
+      display: flex;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 6px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .notes-mode button {
+      flex: 1;
+      padding: 10px 14px;
+      background: transparent;
+      color: #a0a0b0;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .notes-mode button:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .notes-mode button.active {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+    }
+
+    #notes textarea {
+      flex: 1;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #e0e0e0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 14px;
+      resize: none;
+      display: none;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #notes textarea.active {
+      display: block;
+    }
+
+    #notes textarea:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(245, 87, 108, 0.5);
+      box-shadow: 0 0 20px rgba(245, 87, 108, 0.2);
+    }
+
+    .tasks-container {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      display: none;
+      padding-right: 8px;
+    }
+
+    .tasks-container.active {
+      display: block;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .task-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .task-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: #f5576c;
+      flex-shrink: 0;
+    }
+
+    .task-item input[type="text"] {
+      flex: 1;
+      background: transparent;
+      color: #e0e0e0;
+      border: none;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .task-item input[type="text"]:focus {
+      outline: none;
+    }
+
+    .task-item.completed input[type="text"] {
+      color: #666;
+      text-decoration: line-through;
+    }
+
+    .task-item button {
+      padding: 6px 10px;
+      background: rgba(245, 87, 108, 0.2);
+      color: #f5576c;
+      border: 1px solid rgba(245, 87, 108, 0.3);
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+    }
+
+    .task-item button:hover {
+      background: rgba(245, 87, 108, 0.3);
+      border-color: rgba(245, 87, 108, 0.5);
+    }
+
+    .add-task-btn {
+      padding: 12px;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: none;
+      box-shadow: 0 8px 24px rgba(245, 87, 108, 0.3);
+    }
+
+    .add-task-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(245, 87, 108, 0.4);
+    }
+
+    /* ==================== ФАЙЛЫ ==================== */
+    #files {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+    }
+
+    #files h2 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .file-upload {
+      display: flex;
+      gap: 10px;
+    }
+
+    .file-upload input[type="file"] {
+      display: none;
+    }
+
+    .file-upload label {
+      flex: 1;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 8px 24px rgba(79, 172, 254, 0.3);
+    }
+
+    .file-upload label:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(79, 172, 254, 0.4);
+    }
+
+    .file-upload label.uploading {
+      background: linear-gradient(135deg, #ffa500 0%, #ffb700 100%);
+      pointer-events: none;
+    }
+
+    .files-list {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-right: 8px;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .file-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(79, 172, 254, 0.3);
+      transform: translateX(4px);
+    }
+
+    .file-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .file-name {
+      font-weight: 600;
+      word-break: break-all;
+      color: #4facfe;
+      font-size: 14px;
+    }
+
+    .file-size {
+      font-size: 12px;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    .file-actions {
+      display: flex;
+      gap: 8px;
+      margin-left: 10px;
+      flex-shrink: 0;
+    }
+
+    .file-actions button {
+      padding: 6px 10px;
+      font-size: 13px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-weight: 600;
+    }
+
+    .file-actions .download {
+      background: rgba(79, 172, 254, 0.2);
+      color: #4facfe;
+      border: 1px solid rgba(79, 172, 254, 0.3);
+    }
+
+    .file-actions .download:hover {
+      background: rgba(79, 172, 254, 0.3);
+      border-color: rgba(79, 172, 254, 0.5);
+    }
+
+    .file-actions .delete {
+      background: rgba(245, 87, 108, 0.2);
+      color: #f5576c;
+      border: 1px solid rgba(245, 87, 108, 0.3);
+    }
+
+    .file-actions .delete:hover {
+      background: rgba(245, 87, 108, 0.3);
+      border-color: rgba(245, 87, 108, 0.5);
+    }
+
+    .empty-message {
+      text-align: center;
+      color: #666;
+      padding: 48px 16px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    /* ==================== АДАПТИВ ==================== */
+    @media (min-width: 768px) {
+      .container {
+        flex-direction: row;
+      }
+
+      nav {
+        flex-direction: column;
+        width: 200px;
+        border-bottom: none;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 20px 12px;
+        overflow: visible;
+      }
+
+      nav button {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 12px 16px;
+      }
+
+      .content-wrapper {
+        flex: 1;
+      }
+
+      #website {
+        border-radius: 0;
+      }
+
+      #clipboard, #notes, #files {
+        padding: 32px;
+      }
+
+      #clipboard h2, #notes h2, #files h2 {
+        font-size: 28px;
+        margin-bottom: 8px;
+      }
+    }
+
+    /* ==================== УТИЛИТЫ ==================== */
+    .status-indicator {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(245, 87, 108, 0.6);
+      z-index: 1000;
+      box-shadow: 0 0 12px rgba(245, 87, 108, 0.4);
+    }
+
+    .status-indicator.connected {
+      background: rgba(79, 172, 254, 0.8);
+      animation: pulse 2s infinite;
+      box-shadow: 0 0 16px rgba(79, 172, 254, 0.6);
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 0.8;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+      }
+    }
+
+    .fade-out {
+      animation: fadeOut 2s ease-in-out forwards;
+    }
+
+    @keyframes fadeOut {
+      0% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+    }
+
+    @keyframes slideUp {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) translateY(0);
+      }
+    }
+
+    /* ==================== СКРОЛБАР ==================== */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- НАВИГАЦИЯ -->
+    <nav>
+      <button class="nav-btn active" data-screen="website">🌐 Сайт</button>
+      <button class="nav-btn" data-screen="clipboard">📋 Буфер</button>
+      <button class="nav-btn" data-screen="notes">📝 Заметки</button>
+      <button class="nav-btn" data-screen="files">📁 Файлы</button>
+    </nav>
+
+    <!-- СОДЕРЖАНИЕ -->
+    <div class="content-wrapper">
+      <!-- ЭКРАН 1: САЙТ -->
+      <div id="website" class="screen active">
+        <iframe src="https://hearts-together.vercel.app/"></iframe>
+      </div>
+
+      <!-- ЭКРАН 2: БУФЕР ОБМЕНА -->
+      <div id="clipboard" class="screen">
+        <h2>📋 Буфер обмена</h2>
+        <textarea placeholder="Введи текст для синхронизации между всеми устройствами..."></textarea>
+        <button>💾 Сохранить</button>
+      </div>
+
+      <!-- ЭКРАН 3: ЗАМЕТКИ -->
+      <div id="notes" class="screen">
+        <h2>📝 Заметки</h2>
+        <div class="notes-mode">
+          <button class="mode-btn active" data-mode="text">📄 Текст</button>
+          <button class="mode-btn" data-mode="tasks">✓ Задачи</button>
+        </div>
+        <textarea placeholder="Введи текст заметки..."></textarea>
+        <div class="tasks-container">
+          <div class="task-item" style="display: none;"></div>
+        </div>
+        <button class="add-task-btn" style="display: none;">➕ Добавить задачу</button>
+      </div>
+
+      <!-- ЭКРАН 4: ФАЙЛЫ -->
+      <div id="files" class="screen">
+        <h2>📁 Файлы</h2>
+        <div class="file-upload">
+          <input type="file" id="fileInput" multiple>
+          <label for="fileInput">📤 Загрузить файлы</label>
+        </div>
+        <div class="files-list">
+          <div class="empty-message">Файлов нет, загрузи первый файл</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ИНДИКАТОР ПОДКЛЮЧЕНИЯ -->
+    <div class="status-indicator"></div>
+  </div>
+
+  <script>
+    // ==================== ИНИЦИАЛИЗАЦИЯ ====================
+    const screens = {};
+    let currentScreen = 'website';
+    let ws = null;
+    let wsReconnectAttempts = 0;
+    const maxReconnectAttempts = 10;
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    // Инициализируем все экраны
+    document.querySelectorAll('.screen').forEach(screen => {
+      const id = screen.id;
+      screens[id] = {
+        element: screen,
+        index: Object.keys(screens).length
+      };
+    });
+
+    // ==================== РЕГИСТРАЦИЯ SERVICE WORKER ====================
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(err => {
+        console.log('Service Worker не зарегистрирован:', err);
+      });
+    }
+
+    // ==================== WEBSOCKET ====================
+    function connectWebSocket() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}`;
+
+      ws = new WebSocket(wsUrl);
+
+      ws.onopen = () => {
+        console.log('✅ WebSocket подключен');
+        wsReconnectAttempts = 0;
+        updateConnectionStatus(true);
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+
+          if (message.type === 'init') {
+            loadClipboard(message.clipboard);
+            loadNotes(message.notes);
+          }
+
+          if (message.type === 'clipboard') {
+            loadClipboard(message.content);
+          }
+
+          if (message.type === 'notes') {
+            loadNotes(message);
+          }
+
+          if (message.type === 'filesUpdated') {
+            loadFiles();
+          }
+        } catch (error) {
+          console.error('Ошибка обработки сообщения:', error);
+        }
+      };
+
+      ws.onclose = () => {
+        console.log('❌ WebSocket отключен');
+        updateConnectionStatus(false);
+        attemptReconnect();
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket ошибка:', error);
+        updateConnectionStatus(false);
+      };
+    }
+
+    function attemptReconnect() {
+      if (wsReconnectAttempts < maxReconnectAttempts) {
+        wsReconnectAttempts++;
+        const delay = Math.min(1000 * Math.pow(2, wsReconnectAttempts), 30000);
+        console.log(`⏳ Переподключение через ${delay}ms...`);
+        setTimeout(connectWebSocket, delay);
+      } else {
+        console.error('❌ Не удалось подключиться после нескольких попыток');
+      }
+    }
+
+    function updateConnectionStatus(connected) {
+      const indicator = document.querySelector('.status-indicator');
+      if (connected) {
+        indicator.classList.add('connected');
+      } else {
+        indicator.classList.remove('connected');
+      }
+    }
+
+    function sendWebSocketMessage(type, data) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type, ...data }));
+      } else {
+        console.warn('WebSocket не подключен');
+      }
+    }
+
+    // ==================== БУФЕР ОБМЕНА ====================
+    function loadClipboard(content) {
+      const textarea = document.querySelector('#clipboard textarea');
+      textarea.value = content;
+    }
+
+    document.querySelector('#clipboard button').addEventListener('click', () => {
+      const textarea = document.querySelector('#clipboard textarea');
+      sendWebSocketMessage('clipboard', { content: textarea.value });
+      showNotification('✅ Сохранено!');
+    });
+
+    document.querySelector('#clipboard textarea').addEventListener('input', () => {
+      // Auto-save через 2 сек
+      clearTimeout(window.clipboardTimeout);
+      window.clipboardTimeout = setTimeout(() => {
+        const textarea = document.querySelector('#clipboard textarea');
+        sendWebSocketMessage('clipboard', { content: textarea.value });
+      }, 2000);
+    });
+
+    // ==================== ЗАМЕТКИ ====================
+    function loadNotes(notesData) {
+      if (notesData.mode === 'text') {
+        switchNotesMode('text');
+        document.querySelector('#notes textarea').value = notesData.content || '';
+      } else if (notesData.mode === 'tasks') {
+        switchNotesMode('tasks');
+        renderTasks(notesData.tasks || []);
+      }
+    }
+
+    function switchNotesMode(mode) {
+      // Сохраняем текущие данные
+      const textarea = document.querySelector('#notes textarea');
+      if (textarea.classList.contains('active')) {
+        notesData.content = textarea.value;
+      }
+
+      // Переключаемся
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+
+      textarea.classList.toggle('active', mode === 'text');
+      document.querySelector('.tasks-container').classList.toggle('active', mode === 'tasks');
+      document.querySelector('.add-task-btn').style.display = mode === 'tasks' ? 'block' : 'none';
+
+      notesData.mode = mode;
+      saveNotes();
+    }
+
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => switchNotesMode(btn.dataset.mode));
+    });
+
+    document.querySelector('#notes textarea').addEventListener('input', () => {
+      clearTimeout(window.notesTimeout);
+      window.notesTimeout = setTimeout(() => {
+        notesData.content = document.querySelector('#notes textarea').value;
+        saveNotes();
+      }, 1000);
+    });
+
+    function renderTasks(tasks) {
+      const container = document.querySelector('.tasks-container');
+      const template = container.querySelector('.task-item');
+      container.innerHTML = '';
+
+      tasks.forEach((task, index) => {
+        const item = document.createElement('div');
+        item.className = 'task-item' + (task.completed ? ' completed' : '');
+        item.innerHTML = `
+          <input type="checkbox" ${task.completed ? 'checked' : ''}>
+          <input type="text" value="${escapeHtml(task.text)}" readonly>
+          <button onclick="deleteTask(${index})">❌</button>
+        `;
+
+        item.querySelector('input[type="checkbox"]').addEventListener('change', (e) => {
+          notesData.tasks[index].completed = e.target.checked;
+          item.classList.toggle('completed');
+          saveNotes();
+        });
+
+        item.querySelector('input[type="text"]').addEventListener('click', () => {
+          const input = item.querySelector('input[type="text"]');
+          input.readOnly = false;
+          input.focus();
+        });
+
+        item.querySelector('input[type="text"]').addEventListener('blur', () => {
+          const input = item.querySelector('input[type="text"]');
+          notesData.tasks[index].text = input.value;
+          input.readOnly = true;
+          saveNotes();
+        });
+
+        item.querySelector('input[type="text"]').addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.target.blur();
+          }
+        });
+
+        container.appendChild(item);
+      });
+    }
+
+    function addTask() {
+      notesData.tasks.push({ text: 'Новая задача', completed: false });
+      renderTasks(notesData.tasks);
+      saveNotes();
+    }
+
+    function deleteTask(index) {
+      notesData.tasks.splice(index, 1);
+      renderTasks(notesData.tasks);
+      saveNotes();
+    }
+
+    document.querySelector('.add-task-btn').addEventListener('click', addTask);
+
+    let notesData = { mode: 'text', content: '', tasks: [] };
+
+    function saveNotes() {
+      sendWebSocketMessage('notes', { data: notesData });
+    }
+
+    // ==================== ФАЙЛЫ ====================
+    async function loadFiles() {
+      try {
+        const response = await fetch('/api/files');
+        const files = await response.json();
+        const filesList = document.querySelector('.files-list');
+
+        if (files.length === 0) {
+          filesList.innerHTML = '<div class="empty-message">📂 Файлов нет</div>';
+          return;
+        }
+
+        filesList.innerHTML = '';
+        files.forEach(file => {
+          const item = document.createElement('div');
+          item.className = 'file-item';
+
+          const size = formatFileSize(file.size);
+          const date = new Date(file.modified).toLocaleString('ru-RU');
+
+          item.innerHTML = `
+            <div class="file-info">
+              <div class="file-name">📄 ${escapeHtml(file.name)}</div>
+              <div class="file-size">${size} • ${date}</div>
+            </div>
+            <div class="file-actions">
+              <button class="download" onclick="downloadFile('${escapeHtml(file.name)}')">⬇️</button>
+              <button class="delete" onclick="deleteFile('${escapeHtml(file.name)}')">🗑️</button>
+            </div>
+          `;
+
+          filesList.appendChild(item);
+        });
+      } catch (error) {
+        console.error('Ошибка загрузки файлов:', error);
+      }
+    }
+
+    document.querySelector('#fileInput').addEventListener('change', async (e) => {
+      const files = e.target.files;
+      const label = document.querySelector('.file-upload label');
+      const originalText = label.textContent;
+
+      if (files.length === 0) return;
+
+      label.classList.add('uploading');
+      label.textContent = '⏳ Загрузка...';
+
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        try {
+          await fetch('/api/upload', { method: 'POST', body: formData });
+        } catch (error) {
+          console.error('Ошибка загрузки файла:', error);
+        }
+      }
+
+      label.classList.remove('uploading');
+      label.textContent = originalText;
+      e.target.value = '';
+      loadFiles();
+    });
+
+    async function downloadFile(filename) {
+      const url = `/api/download/${encodeURIComponent(filename)}`;
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    async function deleteFile(filename) {
+      if (!confirm(`Удалить файл: ${filename}?`)) return;
+
+      try {
+        const response = await fetch(`/api/files/${encodeURIComponent(filename)}`, {
+          method: 'DELETE'
+        });
+
+        if (response.ok) {
+          showNotification('✅ Файл удален!');
+          loadFiles();
+        }
+      } catch (error) {
+        console.error('Ошибка удаления файла:', error);
+      }
+    }
+
+    // ==================== НАВИГАЦИЯ ====================
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const screenId = btn.dataset.screen;
+        switchScreen(screenId);
+      });
+    });
+
+    function switchScreen(screenId) {
+      if (!screens[screenId]) return;
+
+      document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+      });
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      screens[screenId].element.classList.add('active');
+      document.querySelector(`[data-screen="${screenId}"]`).classList.add('active');
+      currentScreen = screenId;
+
+      // Загружаем файлы, когда переходим на экран файлов
+      if (screenId === 'files') {
+        loadFiles();
+      }
+    }
+
+    // ==================== СВАЙП ДЛЯ МОБИЛЬНЫХ ====================
+    document.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    });
+
+    document.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    });
+
+    function handleSwipe() {
+      const diff = touchStartX - touchEndX;
+      const screenIds = Object.keys(screens);
+      const currentIndex = screenIds.indexOf(currentScreen);
+
+      if (diff > 50 && currentIndex < screenIds.length - 1) {
+        // Свайп влево
+        switchScreen(screenIds[currentIndex + 1]);
+      } else if (diff < -50 && currentIndex > 0) {
+        // Свайп вправо
+        switchScreen(screenIds[currentIndex - 1]);
+      }
+    }
+
+    // ==================== УТИЛИТЫ ====================
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showNotification(message) {
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+        color: #fff;
+        padding: 16px 32px;
+        border-radius: 12px;
+        z-index: 2000;
+        animation: slideUp 0.3s ease-out;
+        font-weight: 600;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+      `;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => notification.remove(), 2000);
+      }, 1500);
+    }
+
+    // ==================== ЗАПУСК ====================
+    connectWebSocket();
+    loadFiles();
+  </script>
+</body>
+</html>
