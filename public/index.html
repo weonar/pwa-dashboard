@@ -61,7 +61,7 @@
       background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
     }
 
-    /* ==================== НАВИГАЦИЯ ==================== */
+    /* ==================== НАВИГАЦИЯ — ДЕСКТОП ==================== */
     nav {
       display: flex;
       background: rgba(20, 20, 35, 0.8);
@@ -101,6 +101,155 @@
       color: #fff;
       border: none;
       box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+    }
+
+    /* ==================== МОБІЛЬНИЙ TOPBAR ==================== */
+    .mobile-topbar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: rgba(20, 20, 35, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+      position: relative;
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .mobile-topbar-title {
+      font-size: 16px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--gradient-primary-1), var(--gradient-primary-2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .mobile-topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .burger-btn {
+      width: 40px;
+      height: 40px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .burger-btn:hover { background: rgba(255,255,255,0.1); }
+
+    .burger-btn span {
+      display: block;
+      width: 18px;
+      height: 2px;
+      background: var(--text-primary);
+      border-radius: 2px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: center;
+    }
+
+    .burger-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .burger-btn.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .burger-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .mobile-settings-btn {
+      width: 40px;
+      height: 40px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .mobile-settings-btn:hover { background: rgba(255,255,255,0.1); }
+
+    /* ==================== МОБІЛЬНИЙ DRAWER ==================== */
+    .mobile-drawer-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 500;
+    }
+
+    .mobile-drawer-overlay.open { display: block; }
+
+    .mobile-drawer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(160deg, #1a1a2e 0%, #16213e 100%);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px 24px 0 0;
+      padding: 12px 16px 40px;
+      z-index: 501;
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.34, 1.1, 0.64, 1);
+    }
+
+    .mobile-drawer.open {
+      transform: translateY(0);
+    }
+
+    .drawer-handle {
+      width: 40px;
+      height: 4px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 4px;
+      margin: 0 auto 20px;
+    }
+
+    .drawer-nav-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .drawer-nav-btn {
+      padding: 14px 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      color: var(--text-secondary);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .drawer-nav-btn:hover {
+      background: rgba(255,255,255,0.09);
+    }
+
+    .drawer-nav-btn.active {
+      background: linear-gradient(135deg, var(--gradient-primary-1), var(--gradient-primary-2));
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 6px 20px rgba(102,126,234,0.35);
     }
 
     /* ==================== СОДЕРЖАНИЕ ==================== */
@@ -368,9 +517,16 @@
     }
 
     /* ==================== СТАТУС ЗАДАЧІ ==================== */
-    .task-status {
+    .task-status-wrap {
+      position: relative;
       flex-shrink: 0;
-      padding: 4px 10px;
+    }
+
+    .task-status {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 8px 4px 10px;
       border-radius: 20px;
       font-size: 11px;
       font-weight: 700;
@@ -378,6 +534,13 @@
       border: none;
       transition: all 0.2s;
       white-space: nowrap;
+      user-select: none;
+    }
+
+    .task-status::after {
+      content: '▾';
+      font-size: 10px;
+      opacity: 0.7;
     }
 
     .task-status.todo {
@@ -398,14 +561,63 @@
       border: 1px solid rgba(46,213,115,0.3);
     }
 
-    .task-item.in-progress {
-      border-color: rgba(79,172,254,0.25);
+    .task-status-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      background: #1e1e35;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      overflow: hidden;
+      z-index: 200;
+      min-width: 140px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      animation: dropIn 0.15s cubic-bezier(0.34,1.3,0.64,1);
     }
 
-    .task-item.done input[type="text"] {
-      color: #666;
-      text-decoration: line-through;
+    @keyframes dropIn {
+      from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
+
+    .task-status-dropdown.open { display: block; }
+
+    .status-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+    }
+
+    .status-option:hover { background: rgba(255,255,255,0.07); }
+
+    .status-option.active { background: rgba(255,255,255,0.05); }
+
+    .status-option .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .status-option.todo   { color: #a0a0b0; }
+    .status-option.todo   .dot { background: #a0a0b0; }
+    .status-option.in-progress { color: #4facfe; }
+    .status-option.in-progress .dot { background: #4facfe; }
+    .status-option.done   { color: #2ed573; }
+    .status-option.done   .dot { background: #2ed573; }
+
+    .task-item.in-progress { border-color: rgba(79,172,254,0.25); }
+    .task-item.done input[type="text"] { color: #666; text-decoration: line-through; }
 
     .add-task-btn {
       padding: 12px;
@@ -1008,26 +1220,59 @@
     }
 
 
-    /* ==================== ШЕСТЕРНЯ В NAV ==================== */
-    .nav-settings-btn {
-      flex-shrink: 0;
-      width: 42px;
-      min-width: 42px !important;
-      padding: 10px !important;
-      font-size: 18px !important;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    /* На мобілі — ховаємо звичайний nav, показуємо topbar */
+    @media (max-width: 767px) {
+      nav { display: none; }
+      .mobile-topbar { display: flex; }
     }
 
     @media (min-width: 768px) {
+      .mobile-topbar { display: none; }
+      .mobile-drawer { display: none !important; }
+      .mobile-drawer-overlay { display: none !important; }
+
+      .container {
+        flex-direction: row;
+      }
+
+      nav {
+        flex-direction: column;
+        width: 200px;
+        border-bottom: none;
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 20px 12px;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      nav button {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 12px 16px;
+      }
+
+      .content-wrapper {
+        flex: 1;
+      }
+
+      #website {
+        border-radius: 0;
+      }
+
+      #clipboard, #notes, #files {
+        padding: 32px;
+      }
+
+      #clipboard h2, #notes h2, #files h2 {
+        font-size: 28px;
+        margin-bottom: 8px;
+      }
+
       .nav-settings-btn {
         width: 100%;
         margin-top: auto;
       }
     }
-
-    /* ==================== МОДАЛЬНЕ ВІКНО НАЛАШТУВАНЬ ==================== */
     .settings-overlay {
       display: none;
       position: fixed;
@@ -1103,45 +1348,6 @@
       color: var(--text-secondary);
       margin-bottom: 10px;
     }
-    @media (min-width: 768px) {
-      .container {
-        flex-direction: row;
-      }
-
-      nav {
-        flex-direction: column;
-        width: 200px;
-        border-bottom: none;
-        border-right: 1px solid rgba(255, 255, 255, 0.08);
-        padding: 20px 12px;
-        overflow-x: hidden;
-        overflow-y: auto;
-      }
-
-      nav button {
-        width: 100%;
-        justify-content: flex-start;
-        padding: 12px 16px;
-      }
-
-      .content-wrapper {
-        flex: 1;
-      }
-
-      #website {
-        border-radius: 0;
-      }
-
-      #clipboard, #notes, #files {
-        padding: 32px;
-      }
-
-      #clipboard h2, #notes h2, #files h2 {
-        font-size: 28px;
-        margin-bottom: 8px;
-      }
-    }
-
     /* ==================== УТИЛИТЫ ==================== */
     .status-indicator {
       position: fixed;
@@ -1219,7 +1425,18 @@
 </head>
 <body>
   <div class="container">
-    <!-- НАВИГАЦИЯ -->
+    <!-- МОБІЛЬНИЙ TOPBAR -->
+    <div class="mobile-topbar">
+      <div class="mobile-topbar-title" id="mobileTitle">🌐 Сайт</div>
+      <div class="mobile-topbar-right">
+        <button class="mobile-settings-btn" id="mobileSettingsBtn" title="Налаштування">⚙️</button>
+        <button class="burger-btn" id="burgerBtn">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- НАВИГАЦИЯ (десктоп) -->
     <nav>
       <button class="nav-btn active" data-screen="website">🌐 Сайт</button>
       <button class="nav-btn" data-screen="clock">🕐 Годинник</button>
@@ -1371,8 +1588,22 @@
       </div>
     </div>
 
-    <!-- ИНДИКАТОР ПОДКЛЮЧЕНИЯ -->
+    <!-- ІНДИКАТОР ПІДКЛЮЧЕННЯ -->
     <div class="status-indicator"></div>
+  </div>
+
+  <!-- МОБІЛЬНИЙ DRAWER -->
+  <div class="mobile-drawer-overlay" id="drawerOverlay"></div>
+  <div class="mobile-drawer" id="mobileDrawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-nav-grid">
+      <button class="drawer-nav-btn active" data-screen="website">🌐 Сайт</button>
+      <button class="drawer-nav-btn" data-screen="clock">🕐 Годинник</button>
+      <button class="drawer-nav-btn" data-screen="statistics">📊 Статистика</button>
+      <button class="drawer-nav-btn" data-screen="clipboard">📋 Буфер</button>
+      <button class="drawer-nav-btn" data-screen="notes">📝 Нотатки</button>
+      <button class="drawer-nav-btn" data-screen="files">📁 Файли</button>
+    </div>
   </div>
   <div class="toast-container" id="toastContainer"></div>
 
@@ -1599,18 +1830,16 @@
 
     // ==================== ЗАМЕТКИ ====================
     function loadNotes(newNotesData, isInit = false) {
-      // mode синхронізуємо тільки при першому init (завантаження сторінки)
-      // При live-оновленні від іншого пристрою — mode НЕ чіпаємо
       if (isInit && newNotesData.mode) {
         notesData.mode = newNotesData.mode;
         updateNotesModeUI(newNotesData.mode);
       }
 
-      // Оновлюємо дані
-      notesData.content = newNotesData.content || '';
-      notesData.tasks   = newNotesData.tasks   || [];
+      // Merge: оновлюємо тільки ті поля що прийшли, решту не чіпаємо
+      if (newNotesData.content !== undefined) notesData.content = newNotesData.content;
+      if (newNotesData.tasks   !== undefined) notesData.tasks   = newNotesData.tasks;
 
-      // Оновлюємо UI тільки для поточного активного режиму
+      // Оновлюємо UI поточного активного режиму
       if (notesData.mode === 'text') {
         document.querySelector('#notes textarea').value = notesData.content;
       } else if (notesData.mode === 'tasks') {
@@ -1682,7 +1911,6 @@
       container.innerHTML = '';
 
       tasks.forEach((task, index) => {
-        // Сумісність зі старим форматом (completed: bool)
         if (task.status === undefined) {
           task.status = task.completed ? 'done' : 'todo';
         }
@@ -1690,39 +1918,67 @@
         const meta = statusMeta(task.status);
         const item = document.createElement('div');
         item.className = `task-item ${meta.cls}`;
+
+        // Будуємо опції дропдауну
+        const optionsHtml = TASK_STATUSES.map(s => `
+          <button class="status-option ${s.cls} ${s.key === task.status ? 'active' : ''}" data-status="${s.key}">
+            <span class="dot"></span>${s.label}
+          </button>
+        `).join('');
+
         item.innerHTML = `
-          <button class="task-status ${meta.cls}" data-index="${index}">${meta.label}</button>
+          <div class="task-status-wrap">
+            <button class="task-status ${meta.cls}">${meta.label}</button>
+            <div class="task-status-dropdown">${optionsHtml}</div>
+          </div>
           <input type="text" value="${escapeHtml(task.text)}" readonly>
           <button class="task-delete-btn" onclick="deleteTask(${index})">✕</button>
         `;
 
-        // Клік по статусу — перемикання
-        item.querySelector('.task-status').addEventListener('click', () => {
-          const newStatus = nextStatus(notesData.tasks[index].status || 'todo');
-          notesData.tasks[index].status = newStatus;
-          notesData.tasks[index].completed = newStatus === 'done';
-          renderTasks(notesData.tasks);
-          saveNotes();
+        // Відкриття/закриття дропдауну
+        const statusBtn = item.querySelector('.task-status');
+        const dropdown  = item.querySelector('.task-status-dropdown');
+
+        statusBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          // Закриваємо всі інші відкриті дропдауни
+          document.querySelectorAll('.task-status-dropdown.open').forEach(d => {
+            if (d !== dropdown) d.classList.remove('open');
+          });
+          dropdown.classList.toggle('open');
+        });
+
+        // Вибір статусу
+        dropdown.querySelectorAll('.status-option').forEach(opt => {
+          opt.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const newStatus = opt.dataset.status;
+            notesData.tasks[index].status   = newStatus;
+            notesData.tasks[index].completed = newStatus === 'done';
+            dropdown.classList.remove('open');
+            renderTasks(notesData.tasks);
+            saveNotes();
+          });
         });
 
         // Редагування тексту
         const textInput = item.querySelector('input[type="text"]');
-        textInput.addEventListener('click', () => {
-          textInput.readOnly = false;
-          textInput.focus();
-        });
-        textInput.addEventListener('blur', () => {
+        textInput.addEventListener('click', () => { textInput.readOnly = false; textInput.focus(); });
+        textInput.addEventListener('blur',  () => {
           notesData.tasks[index].text = textInput.value;
           textInput.readOnly = true;
           saveNotes();
         });
-        textInput.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') textInput.blur();
-        });
+        textInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') textInput.blur(); });
 
         container.appendChild(item);
       });
     }
+
+    // Закриваємо дропдауни при кліку поза ними
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.task-status-dropdown.open').forEach(d => d.classList.remove('open'));
+    });
 
     function addTask() {
       notesData.tasks.push({ text: 'Нове завдання', completed: false });
@@ -1743,7 +1999,11 @@
     function saveNotes() {
       realStats.taskChanges++;
       realStats.hourlyActivity[new Date().getHours()]++;
-      sendWebSocketMessage('notes', { data: notesData });
+      // Відправляємо тільки поле яке зараз активне — не затираємо інший режим на інших пристроях
+      const payload = notesData.mode === 'tasks'
+        ? { mode: notesData.mode, tasks: notesData.tasks }
+        : { mode: notesData.mode, content: notesData.content };
+      sendWebSocketMessage('notes', { data: payload });
     }
 
     // ==================== ФАЙЛИ ====================
@@ -1949,32 +2209,81 @@
     }
 
     // ==================== НАВИГАЦИЯ ====================
+    // ==================== БУРГЕР МЕНЮ ====================
+    const burgerBtn       = document.getElementById('burgerBtn');
+    const mobileDrawer    = document.getElementById('mobileDrawer');
+    const drawerOverlay   = document.getElementById('drawerOverlay');
+    const mobileTitle     = document.getElementById('mobileTitle');
+    const mobileSettingsBtn = document.getElementById('mobileSettingsBtn');
+
+    const SCREEN_TITLES = {
+      website:    '🌐 Сайт',
+      clock:      '🕐 Годинник',
+      statistics: '📊 Статистика',
+      clipboard:  '📋 Буфер обміну',
+      notes:      '📝 Нотатки',
+      files:      '📁 Файли',
+    };
+
+    function openDrawer() {
+      mobileDrawer.classList.add('open');
+      drawerOverlay.classList.add('open');
+      burgerBtn.classList.add('open');
+    }
+
+    function closeDrawer() {
+      mobileDrawer.classList.remove('open');
+      drawerOverlay.classList.remove('open');
+      burgerBtn.classList.remove('open');
+    }
+
+    burgerBtn.addEventListener('click', () => {
+      mobileDrawer.classList.contains('open') ? closeDrawer() : openDrawer();
+    });
+
+    drawerOverlay.addEventListener('click', closeDrawer);
+
+    mobileSettingsBtn.addEventListener('click', () => {
+      document.getElementById('settingsOverlay').classList.add('open');
+    });
+
+    // Drawer nav buttons
+    document.querySelectorAll('.drawer-nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        switchScreen(btn.dataset.screen);
+        closeDrawer();
+      });
+    });
+
+    // Desktop nav buttons
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const screenId = btn.dataset.screen;
-        switchScreen(screenId);
+        switchScreen(btn.dataset.screen);
       });
     });
 
     function switchScreen(screenId) {
       if (!screens[screenId]) return;
 
-      document.querySelectorAll('.screen').forEach(screen => {
-        screen.classList.remove('active');
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+
+      // Десктоп nav
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.screen === screenId);
       });
 
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('active');
+      // Мобільний drawer
+      document.querySelectorAll('.drawer-nav-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.screen === screenId);
       });
+
+      // Topbar title
+      if (mobileTitle) mobileTitle.textContent = SCREEN_TITLES[screenId] || screenId;
 
       screens[screenId].element.classList.add('active');
-      document.querySelector(`[data-screen="${screenId}"]`).classList.add('active');
       currentScreen = screenId;
 
-      // Загружаем файлы, когда переходим на экран файлов
-      if (screenId === 'files') {
-        loadFiles();
-      }
+      if (screenId === 'files') loadFiles();
     }
 
 
