@@ -1503,7 +1503,7 @@
 
           if (message.type === 'init') {
             loadClipboard(message.clipboard);
-            loadNotes(message.notes);
+            loadNotes(message.notes, true); // isInit=true — дозволяємо встановити mode
           }
 
           if (message.type === 'clipboard') {
@@ -1511,7 +1511,7 @@
           }
 
           if (message.type === 'notes') {
-            loadNotes(message);
+            loadNotes(message); // isInit=false — mode не чіпаємо
           }
 
           if (message.type === 'filesUpdated') {
@@ -1598,20 +1598,24 @@
     });
 
     // ==================== ЗАМЕТКИ ====================
-    function loadNotes(newNotesData) {
-      // При загрузке с сервера - только обновляем UI, не сохраняем
-      updateNotesModeUI(newNotesData.mode);
-
-      if (newNotesData.mode === 'text') {
-        document.querySelector('#notes textarea').value = newNotesData.content || '';
-      } else if (newNotesData.mode === 'tasks') {
-        renderTasks(newNotesData.tasks || []);
+    function loadNotes(newNotesData, isInit = false) {
+      // mode синхронізуємо тільки при першому init (завантаження сторінки)
+      // При live-оновленні від іншого пристрою — mode НЕ чіпаємо
+      if (isInit && newNotesData.mode) {
+        notesData.mode = newNotesData.mode;
+        updateNotesModeUI(newNotesData.mode);
       }
 
-      // Обновляем локальные данные после загрузки с сервера
-      notesData.mode = newNotesData.mode;
+      // Оновлюємо дані
       notesData.content = newNotesData.content || '';
-      notesData.tasks = newNotesData.tasks || [];
+      notesData.tasks   = newNotesData.tasks   || [];
+
+      // Оновлюємо UI тільки для поточного активного режиму
+      if (notesData.mode === 'text') {
+        document.querySelector('#notes textarea').value = notesData.content;
+      } else if (notesData.mode === 'tasks') {
+        renderTasks(notesData.tasks);
+      }
     }
 
     // Обновляет только UI режима без сохранения на сервер

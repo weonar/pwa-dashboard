@@ -255,12 +255,14 @@ wss.on('connection', (ws) => {
       }
 
       if (message.type === 'notes') {
-        notesData = message.data;
+        // mode — локальний стан перегляду, не синхронізуємо між пристроями
+        const { mode, ...dataToSync } = message.data;
+        notesData = { ...dataToSync, mode: notesData.mode }; // зберігаємо серверний mode незмінним
         // Сохраняем в файл
         await fs.writeFile(NOTES_FILE, JSON.stringify(notesData));
-        console.log(`💾 Заметки сохранены: режим ${notesData.mode}, ${notesData.tasks?.length || 0} задач`);
-        // Отправляем всем клиентам
-        broadcastMessage('notes', notesData, clientId);
+        console.log(`💾 Заметки сохранены: ${notesData.tasks?.length || 0} задач`);
+        // Транслюємо іншим без mode
+        broadcastMessage('notes', dataToSync, clientId);
       }
     } catch (error) {
       console.error('Ошибка при обработке сообщения:', error.message);
