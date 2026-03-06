@@ -584,6 +584,57 @@
       border-color: rgba(245, 87, 108, 0.5);
     }
 
+    /* ==================== INLINE ПІДТВЕРДЖЕННЯ ==================== */
+    .delete-confirm {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(245, 87, 108, 0.12);
+      border: 1px solid rgba(245, 87, 108, 0.35);
+      border-radius: 8px;
+      padding: 6px 10px;
+      animation: confirmIn 0.18s ease-out;
+    }
+
+    @keyframes confirmIn {
+      from { opacity: 0; transform: scale(0.92); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .delete-confirm span {
+      font-size: 12px;
+      color: rgba(245, 87, 108, 0.9);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .delete-confirm button {
+      padding: 4px 10px !important;
+      font-size: 12px !important;
+      border-radius: 6px !important;
+      font-weight: 700 !important;
+      border: none !important;
+      cursor: pointer;
+    }
+
+    .delete-confirm .confirm-yes {
+      background: rgba(245, 87, 108, 0.85);
+      color: #fff;
+    }
+
+    .delete-confirm .confirm-yes:hover {
+      background: rgba(245, 87, 108, 1);
+    }
+
+    .delete-confirm .confirm-no {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-secondary);
+    }
+
+    .delete-confirm .confirm-no:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
     .empty-message {
       text-align: center;
       color: #666;
@@ -641,7 +692,7 @@
 
     /* ==================== СТАТИСТИКА ==================== */
     #statistics {
-      padding: 20px;
+      padding: 20px 20px 48px;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -1543,7 +1594,7 @@
             </div>
             <div class="file-actions">
               <button class="download" onclick="downloadFile('${escapeHtml(file.name)}')">⬇️</button>
-              <button class="delete" onclick="deleteFile('${escapeHtml(file.name)}')">🗑️</button>
+              <button class="delete" onclick="showDeleteConfirm(this, '${escapeHtml(file.name)}')">🗑️</button>
             </div>
           `;
 
@@ -1648,9 +1699,34 @@
       document.body.removeChild(a);
     }
 
-    async function deleteFile(filename) {
-      if (!confirm(`Видалити файл: ${filename}?`)) return;
+    function showDeleteConfirm(btn, filename) {
+      const actions = btn.closest('.file-actions');
+      // Якщо вже відкрито — закрити
+      if (actions.querySelector('.delete-confirm')) {
+        actions.innerHTML = `
+          <button class="download" onclick="downloadFile('${escapeHtml(filename)}')">⬇️</button>
+          <button class="delete" onclick="showDeleteConfirm(this, '${escapeHtml(filename)}')">🗑️</button>
+        `;
+        return;
+      }
+      actions.innerHTML = `
+        <div class="delete-confirm">
+          <span>Видалити?</span>
+          <button class="confirm-yes" onclick="deleteFile('${escapeHtml(filename)}')">Так</button>
+          <button class="confirm-no" onclick="cancelDeleteConfirm(this, '${escapeHtml(filename)}')">Ні</button>
+        </div>
+      `;
+    }
 
+    function cancelDeleteConfirm(btn, filename) {
+      const actions = btn.closest('.file-actions');
+      actions.innerHTML = `
+        <button class="download" onclick="downloadFile('${escapeHtml(filename)}')">⬇️</button>
+        <button class="delete" onclick="showDeleteConfirm(this, '${escapeHtml(filename)}')">🗑️</button>
+      `;
+    }
+
+    async function deleteFile(filename) {
       try {
         const response = await fetch(`/api/files/${encodeURIComponent(filename)}`, {
           method: 'DELETE'
@@ -2071,7 +2147,7 @@
 
       if (lastSync) {
         const timeStr = new Date(lastSync).toLocaleTimeString('uk-UA', {hour: '2-digit', minute: '2-digit'});
-        logActivity('Синхронізація', `Остання: ${timeStr}`);
+        document.getElementById('stat-devices-time').textContent = `Синхро: ${timeStr}`;
       }
     }
 
@@ -2089,7 +2165,6 @@
 
     // ==================== ЗАПУСК ====================
     connectWebSocket();
-    loadFiles();
     initCharts();
 
     // ==================== ГОДИННИК ====================
@@ -2125,8 +2200,6 @@
       if (dateElement) {
         dateElement.textContent = dateString;
       }
-      
-      updateStatistics();
     }
 
     // Обновляем часы каждую секунду
