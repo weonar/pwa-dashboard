@@ -12,6 +12,7 @@
   <title>PWA Dashboard</title>
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23667eea;stop-opacity:1' /><stop offset='100%' style='stop-color:%23764ba2;stop-opacity:1' /></linearGradient></defs><rect fill='url(%23grad)' width='192' height='192' rx='40'/><text x='96' y='130' font-size='100' fill='white' text-anchor='middle' font-weight='bold'>D</text></svg>">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     /* ==================== CSS VARIABLES SYSTEM ==================== */
@@ -1969,12 +1970,11 @@
 
     // ==================== ЧАСЫ ====================
     function updateClock() {
-      // Получаем текущее время по Киеву (UTC+2 или UTC+3 в зависимости от летнего времени)
+      // Получаем текущее время
       const now = new Date();
       
-      // Форматируем время в часовом поясе Киев
+      // Форматируем время (используем локальное время устройства)
       const timeOptions = {
-        timeZone: 'Europe/Kyiv',
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
@@ -1982,7 +1982,6 @@
       };
       
       const dateOptions = {
-        timeZone: 'Europe/Kyiv',
         weekday: 'long',
         day: 'numeric',
         month: 'long',
