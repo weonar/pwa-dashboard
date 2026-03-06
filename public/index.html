@@ -661,9 +661,14 @@
       color: var(--text-secondary);
     }
 
-    canvas {
+    .chart-container {
+      position: relative;
       width: 100%;
       height: 200px;
+    }
+
+    canvas {
+      display: block;
     }
 
     /* ==================== ТЕМЫ ==================== */
@@ -1068,7 +1073,7 @@
               <div class="chart-title">Активність по годинах</div>
               <div class="chart-subtitle">Теплова карта активності</div>
             </div>
-            <canvas id="heatmapChart"></canvas>
+            <div class="chart-container"><canvas id="heatmapChart"></canvas></div>
           </div>
           
           <div class="chart-card">
@@ -1076,7 +1081,7 @@
               <div class="chart-title">Статистика завдань</div>
               <div class="chart-subtitle">Виконано vs В процесі</div>
             </div>
-            <canvas id="pieChart"></canvas>
+            <div class="chart-container"><canvas id="pieChart"></canvas></div>
           </div>
           
           <div class="chart-card">
@@ -1084,7 +1089,7 @@
               <div class="chart-title">Зміни по часу</div>
               <div class="chart-subtitle">Лінійний графік активності</div>
             </div>
-            <canvas id="lineChart"></canvas>
+            <div class="chart-container"><canvas id="lineChart"></canvas></div>
           </div>
         </div>
       </div>
