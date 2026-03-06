@@ -185,6 +185,47 @@ app.get('/api/notes', (req, res) => {
   res.json(notesData);
 });
 
+// Получить статистику (для фронтенда)
+app.get('/api/statistics', async (req, res) => {
+  try {
+    // Получаем список файлов
+    let fileCount = 0;
+    let totalSize = 0;
+
+    try {
+      const files = await fs.readdir(HDD_PATH);
+      for (const file of files) {
+        const filePath = path.join(HDD_PATH, file);
+        const stat = await fs.stat(filePath);
+        if (stat.isFile()) {
+          fileCount++;
+          totalSize += stat.size;
+        }
+      }
+    } catch (err) {
+      console.error('Ошибка при чтении файлов:', err.message);
+    }
+
+    // Статистика по задачам
+    const totalTasks = notesData.tasks?.length || 0;
+    const completedTasks = notesData.tasks?.filter(t => t.completed).length || 0;
+
+    // Количество подключенных пристроев
+    const connectedDevices = clients.size;
+
+    res.json({
+      tasks: { total: totalTasks, completed: completedTasks },
+      files: { count: fileCount, totalSize },
+      devices: connectedDevices,
+      clipboard: { length: clipboardData?.length || 0 },
+      lastSync: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Ошибка при получении статистики:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // ==================== WEBSOCKET ====================
 wss.on('connection', (ws) => {
   const clientId = Date.now() + Math.random();
