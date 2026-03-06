@@ -1329,24 +1329,11 @@
       document.getElementById('stat-tasks-done').textContent = `Виконано: ${completedTasks}`;
 
       // Clipboard stats
-      const clipboardChars = clipboardData?.length || 0;
+      const clipboardChars = document.querySelector('#clipboard textarea')?.value?.length || 0;
       document.getElementById('stat-clipboard').textContent = clipboardChars;
       document.getElementById('stat-clipboard-chars').textContent =
         clipboardChars === 1 ? 'символ' : clipboardChars % 10 < 5 && clipboardChars % 10 > 0 ? 'символи' : 'символів';
     }
-
-    // Update statistics when data changes
-    const originalLoadClipboard = loadClipboard;
-    loadClipboard = function(content) {
-      originalLoadClipboard(content);
-      updateStatistics();
-    };
-
-    const originalLoadNotes = loadNotes;
-    loadNotes = function(data) {
-      originalLoadNotes(data);
-      updateStatistics();
-    };
 
     // Periodic update of statistics
     setInterval(updateStatistics, 2000);
