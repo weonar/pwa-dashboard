@@ -815,49 +815,6 @@
       font-size: 11px;
     }
 
-    #camera {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: #000;
-    }
-
-    #camera-feed {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .camera-controls {
-        position: absolute;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 20px;
-    }
-
-    .camera-controls button {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        border: none;
-        background-color: rgba(255, 255, 255, 0.3);
-        color: white;
-        font-size: 24px;
-        cursor: pointer;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-#take-photo::after {
-        content: '';
-        width: 20px;
-        height: 20px;
-        background-color: red;
-        border-radius: 50%;
-    }
 
     /* ==================== АДАПТИВ ==================== */
     @media (min-width: 768px) {
@@ -983,7 +940,6 @@
       <button class="nav-btn" data-screen="clipboard">📋 Буфер</button>
       <button class="nav-btn" data-screen="notes">📝 Нотатки</button>
       <button class="nav-btn" data-screen="files">📁 Файли</button>
-      <button class="nav-btn" data-screen="camera">📷 Камера</button>
     </nav>
 
     <!-- СОДЕРЖАНИЕ -->
@@ -1167,13 +1123,6 @@
       </div>
 
       <!-- ЕКРАН 6: КАМЕРА -->
-      <div id="camera" class="screen">
-        <video id="camera-feed" autoplay playsinline></video>
-        <div class="camera-controls">
-            <button id="flip-camera">🔄</button>
-            <button id="take-photo">⚪</button>
-        </div>
-      </div>
     </div>
 
     <!-- ИНДИКАТОР ПОДКЛЮЧЕНИЯ -->
@@ -1576,20 +1525,8 @@
       if (screenId === 'files') {
         loadFiles();
       }
-
-      if (screenId === 'camera') {
-        startCamera();
-      } else {
-        stopCamera();
-      }
     }
 
-    function stopCamera() {
-        const videoElement = document.getElementById('camera-feed');
-        if (videoElement.srcObject) {
-            videoElement.srcObject.getTracks().forEach(track => track.stop());
-        }
-    }
 
     // ==================== УТИЛИТЫ ====================
     function formatFileSize(bytes) {
