@@ -1837,9 +1837,20 @@
       const now = new Date();
       const currentHour = now.getHours();
 
-      // Heatmap - симулируем активность
+      // Heatmap - симулируем активность с ограничением роста
       const heatmapData = charts.heatmap.data.datasets[0].data;
-      heatmapData[currentHour] = (heatmapData[currentHour] || 0) + Math.floor(Math.random() * 10) + 5;
+      // Сбрасываем данные каждый час для предотвращения бесконечного роста
+      if (now.getMinutes() === 0 && now.getSeconds() < 5) {
+        // В начале каждого часа сбрасываем все значения
+        heatmapData.fill(0);
+      }
+      
+      // Добавляем небольшое случайное значение для текущего часа
+      const currentValue = heatmapData[currentHour] || 0;
+      const newValue = currentValue + Math.floor(Math.random() * 3) + 1;
+      
+      // Ограничиваем максимальное значение, чтобы график не уходил в бесконечность
+      heatmapData[currentHour] = Math.min(newValue, 100);
       charts.heatmap.update();
 
       // Pie Chart - обновляем статистику задач
@@ -1850,10 +1861,13 @@
       charts.pie.data.datasets[0].data = [completedTasks, inProgressTasks];
       charts.pie.update();
 
-      // Line Chart - добавляем новую точку
+      // Line Chart - добавляем новую точку с ограничением
       const lineData = charts.line.data.datasets[0].data;
       if (lineData.length >= 12) lineData.shift();
-      lineData.push(Math.floor(Math.random() * 40) + 10);
+      
+      // Генерируем значение в разумных пределах
+      const newValueLine = Math.floor(Math.random() * 40) + 10;
+      lineData.push(newValueLine);
       charts.line.update();
     }
 
