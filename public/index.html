@@ -841,22 +841,20 @@
     });
 
     // ==================== ЗАМЕТКИ ====================
-    function loadNotes(notesData) {
+    function loadNotes(newNotesData) {
       // При загрузке с сервера - только обновляем UI, не сохраняем
-      updateNotesModeUI(notesData.mode);
+      updateNotesModeUI(newNotesData.mode);
 
-      if (notesData.mode === 'text') {
-        document.querySelector('#notes textarea').value = notesData.content || '';
-      } else if (notesData.mode === 'tasks') {
-        renderTasks(notesData.tasks || []);
+      if (newNotesData.mode === 'text') {
+        document.querySelector('#notes textarea').value = newNotesData.content || '';
+      } else if (newNotesData.mode === 'tasks') {
+        renderTasks(newNotesData.tasks || []);
       }
 
       // Обновляем локальные данные после загрузки с сервера
-      notesData = {
-        mode: notesData.mode,
-        content: notesData.content || '',
-        tasks: notesData.tasks || []
-      };
+      notesData.mode = newNotesData.mode;
+      notesData.content = newNotesData.content || '';
+      notesData.tasks = newNotesData.tasks || [];
     }
 
     // Обновляет только UI режима без сохранения на сервер
