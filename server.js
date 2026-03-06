@@ -39,12 +39,18 @@ async function initializeData() {
     if (fsSync.existsSync(CLIPBOARD_FILE)) {
       const data = await fs.readFile(CLIPBOARD_FILE, 'utf8');
       clipboardData = JSON.parse(data).content || '';
+      console.log(`📋 Буфер обмена загружен: ${clipboardData.substring(0, 50)}...`);
     }
 
     // Загружаем заметки
     if (fsSync.existsSync(NOTES_FILE)) {
       const data = await fs.readFile(NOTES_FILE, 'utf8');
       notesData = JSON.parse(data);
+      // Убеждаемся что имеет все необходимые поля
+      if (!notesData.tasks) notesData.tasks = [];
+      if (!notesData.mode) notesData.mode = 'text';
+      if (!notesData.content) notesData.content = '';
+      console.log(`📝 Заметки загружены: режим ${notesData.mode}, ${notesData.tasks?.length || 0} задач`);
     }
   } catch (error) {
     console.error('Ошибка при загрузке данных:', error.message);
@@ -202,6 +208,7 @@ wss.on('connection', (ws) => {
         clipboardData = message.content;
         // Сохраняем в файл
         await fs.writeFile(CLIPBOARD_FILE, JSON.stringify({ content: clipboardData }));
+        console.log(`💾 Буфер обмена сохранен (${clipboardData.length} символов)`);
         // Отправляем всем клиентам
         broadcastMessage('clipboard', { content: clipboardData }, clientId);
       }
@@ -210,6 +217,7 @@ wss.on('connection', (ws) => {
         notesData = message.data;
         // Сохраняем в файл
         await fs.writeFile(NOTES_FILE, JSON.stringify(notesData));
+        console.log(`💾 Заметки сохранены: режим ${notesData.mode}, ${notesData.tasks?.length || 0} задач`);
         // Отправляем всем клиентам
         broadcastMessage('notes', notesData, clientId);
       }
