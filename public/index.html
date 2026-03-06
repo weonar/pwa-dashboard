@@ -1846,9 +1846,8 @@
         heatmapData.fill(0);
       }
       
-      // Добавляем очень небольшое случайное значение для текущего часа
-      const currentValue = heatmapData[currentHour] || 0;
-      const newValue = currentValue + Math.floor(Math.random() * 2) + 1;
+      // Просто устанавливаем новое случайное значение, а не добавляем
+      const newValue = Math.floor(Math.random() * 20) + 5; // Случайное значение от 5 до 25
       
       // Жестко ограничиваем максимальное значение
       heatmapData[currentHour] = Math.min(newValue, 50);
@@ -1864,11 +1863,16 @@
 
       // Line Chart - добавляем новую точку с ограничением
       const lineData = charts.line.data.datasets[0].data;
-      if (lineData.length >= 12) lineData.shift();
+      const lineLabels = charts.line.data.labels;
+      if (lineData.length >= 12) {
+        lineData.shift();
+        lineLabels.shift();
+      }
       
       // Генерируем значение в разумных пределах
       const newValueLine = Math.floor(Math.random() * 30) + 5;
       lineData.push(newValueLine);
+      lineLabels.push(new Date().toLocaleTimeString('uk-UA', { minute: '2-digit', second: '2-digit' }));
       charts.line.update();
     }
 
