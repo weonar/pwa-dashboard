@@ -389,8 +389,17 @@
     }
 
     .file-upload {
-      display: flex;
-      gap: 10px;
+      border: 2px dashed rgba(79, 172, 254, 0.3);
+      border-radius: 16px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: rgba(79, 172, 254, 0.03);
+    }
+
+    .file-upload.drag-over {
+      border-color: rgba(79, 172, 254, 0.8);
+      background: rgba(79, 172, 254, 0.1);
+      transform: scale(1.01);
+      box-shadow: 0 0 30px rgba(79, 172, 254, 0.2);
     }
 
     .file-upload input[type="file"] {
@@ -398,28 +407,98 @@
     }
 
     .file-upload label {
-      flex: 1;
-      padding: 14px 20px;
-      background: linear-gradient(135deg, var(--gradient-tertiary-1) 0%, var(--gradient-tertiary-2) 100%);
-      color: #000;
-      border: none;
-      border-radius: 10px;
-      font-weight: 700;
-      font-size: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 28px 20px;
       cursor: pointer;
       text-align: center;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 8px 24px rgba(79, 172, 254, 0.3);
     }
 
-    .file-upload label:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 32px rgba(79, 172, 254, 0.4);
+    .upload-icon {
+      font-size: 32px;
+      line-height: 1;
     }
 
-    .file-upload label.uploading {
-      background: linear-gradient(135deg, #ffa500 0%, #ffb700 100%);
+    .upload-text {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--gradient-tertiary-1);
+    }
+
+    .upload-hint {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .file-upload.uploading label {
+      opacity: 0.7;
       pointer-events: none;
+    }
+
+    /* ==================== ПРЕВЬЮ ФАЙЛІВ ==================== */
+    .file-preview {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .file-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    /* ==================== TOAST УВЕДОМЛЕНИЯ ==================== */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+    }
+
+    .toast {
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      white-space: nowrap;
+      animation: toastIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      pointer-events: none;
+    }
+
+    .toast.success { background: rgba(46, 213, 115, 0.9); }
+    .toast.error   { background: rgba(245, 87, 108, 0.9); }
+    .toast.info    { background: rgba(102, 126, 234, 0.9); }
+    .toast.out     { animation: toastOut 0.3s ease-in forwards; }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.95); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes toastOut {
+      from { opacity: 1; transform: translateY(0) scale(1); }
+      to   { opacity: 0; transform: translateY(-8px) scale(0.95); }
     }
 
     .files-list {
@@ -947,6 +1026,7 @@
       <button class="nav-btn" data-screen="files">📁 Файли</button>
     </nav>
 
+
     <!-- СОДЕРЖАНИЕ -->
     <div class="content-wrapper">
       <!-- ЭКРАН 1: САЙТ -->
@@ -1071,7 +1151,7 @@
           <div class="chart-card">
             <div class="chart-header">
               <div class="chart-title">Активність по годинах</div>
-              <div class="chart-subtitle">Теплова карта активності</div>
+              <div class="chart-subtitle">Реальні дії за годину</div>
             </div>
             <div class="chart-container"><canvas id="heatmapChart"></canvas></div>
           </div>
@@ -1086,8 +1166,8 @@
           
           <div class="chart-card">
             <div class="chart-header">
-              <div class="chart-title">Зміни по часу</div>
-              <div class="chart-subtitle">Лінійний графік активності</div>
+              <div class="chart-title">Загальна активність</div>
+              <div class="chart-subtitle">Буфер + нотатки + файли</div>
             </div>
             <div class="chart-container"><canvas id="lineChart"></canvas></div>
           </div>
@@ -1098,7 +1178,10 @@
       <div id="clipboard" class="screen">
         <h2>📋 Буфер обміну</h2>
         <textarea placeholder="Введіть текст для синхронізації між усіма пристроями..."></textarea>
-        <button>💾 Зберегти</button>
+        <div style="display:flex;gap:10px;">
+          <button id="clipboardSaveBtn" style="flex:1">💾 Зберегти</button>
+          <button id="clipboardCopyBtn" style="flex:1;background:linear-gradient(135deg,#4facfe,#00f2fe);box-shadow:0 8px 24px rgba(79,172,254,0.3)">📋 Копіювати</button>
+        </div>
       </div>
 
       <!-- ЕКРАН 4: НОТАТКИ -->
@@ -1118,21 +1201,24 @@
       <!-- ЕКРАН 5: ФАЙЛИ -->
       <div id="files" class="screen">
         <h2>📁 Файли</h2>
-        <div class="file-upload">
+        <div class="file-upload" id="dropZone">
           <input type="file" id="fileInput" multiple>
-          <label for="fileInput">📤 Завантажити файли</label>
+          <label for="fileInput">
+            <span class="upload-icon">📤</span>
+            <span class="upload-text">Завантажити файли</span>
+            <span class="upload-hint">або перетягніть сюди</span>
+          </label>
         </div>
         <div class="files-list">
           <div class="empty-message">Файлів немає, завантажте перший файл</div>
         </div>
       </div>
-
-      <!-- ЕКРАН 6: КАМЕРА -->
     </div>
 
     <!-- ИНДИКАТОР ПОДКЛЮЧЕНИЯ -->
     <div class="status-indicator"></div>
   </div>
+  <div class="toast-container" id="toastContainer"></div>
 
   <script>
     // ==================== ИНИЦИАЛИЗАЦИЯ ====================
@@ -1141,6 +1227,15 @@
     let ws = null;
     let wsReconnectAttempts = 0;
     const maxReconnectAttempts = 10;
+
+    // Реальна статистика для графіків
+    const realStats = {
+      uploads: 0,
+      clipboardChanges: 0,
+      taskChanges: 0,
+      hourlyActivity: new Array(24).fill(0),
+      lineHistory: []
+    };
 
     // Инициализируем все экраны
     document.querySelectorAll('.screen').forEach(screen => {
@@ -1242,13 +1337,27 @@
       textarea.value = content;
     }
 
-    document.querySelector('#clipboard button').addEventListener('click', () => {
+    document.getElementById('clipboardSaveBtn').addEventListener('click', () => {
       const textarea = document.querySelector('#clipboard textarea');
       sendWebSocketMessage('clipboard', { content: textarea.value });
-      showNotification('✅ Збережено!');
+      showNotification('💾 Збережено!', 'success');
+    });
+
+    document.getElementById('clipboardCopyBtn').addEventListener('click', async () => {
+      const textarea = document.querySelector('#clipboard textarea');
+      try {
+        await navigator.clipboard.writeText(textarea.value);
+        showNotification('📋 Скопійовано!', 'success');
+      } catch {
+        textarea.select();
+        document.execCommand('copy');
+        showNotification('📋 Скопійовано!', 'success');
+      }
     });
 
     document.querySelector('#clipboard textarea').addEventListener('input', () => {
+      realStats.clipboardChanges++;
+      realStats.hourlyActivity[new Date().getHours()]++;
       // Auto-save через 2 сек
       clearTimeout(window.clipboardTimeout);
       window.clipboardTimeout = setTimeout(() => {
@@ -1378,10 +1487,29 @@
     let notesData = { mode: 'text', content: '', tasks: [] };
 
     function saveNotes() {
+      realStats.taskChanges++;
+      realStats.hourlyActivity[new Date().getHours()]++;
       sendWebSocketMessage('notes', { data: notesData });
     }
 
     // ==================== ФАЙЛИ ====================
+    const IMAGE_EXTS = ['jpg','jpeg','png','gif','webp','svg','bmp'];
+    const VIDEO_EXTS = ['mp4','webm','ogg','mov'];
+
+    function getFileIcon(name) {
+      const ext = name.split('.').pop().toLowerCase();
+      if (IMAGE_EXTS.includes(ext)) return '🖼️';
+      if (VIDEO_EXTS.includes(ext)) return '🎬';
+      if (['mp3','wav','aac','flac'].includes(ext)) return '🎵';
+      if (['pdf'].includes(ext)) return '📄';
+      if (['zip','rar','7z','tar','gz'].includes(ext)) return '🗜️';
+      if (['doc','docx'].includes(ext)) return '📝';
+      if (['xls','xlsx'].includes(ext)) return '📊';
+      if (['ppt','pptx'].includes(ext)) return '📑';
+      if (['js','ts','py','html','css','json'].includes(ext)) return '💻';
+      return '📁';
+    }
+
     async function loadFiles() {
       try {
         const response = await fetch('/api/files');
@@ -1400,10 +1528,17 @@
 
           const size = formatFileSize(file.size);
           const date = new Date(file.modified).toLocaleString('uk-UA');
+          const ext = file.name.split('.').pop().toLowerCase();
+          const isImage = IMAGE_EXTS.includes(ext);
+
+          const previewHtml = isImage
+            ? `<img class="file-preview" src="/api/download/${encodeURIComponent(file.name)}" loading="lazy" onerror="this.style.display='none'">`
+            : `<div class="file-icon">${getFileIcon(file.name)}</div>`;
 
           item.innerHTML = `
-            <div class="file-info">
-              <div class="file-name">📄 ${escapeHtml(file.name)}</div>
+            ${previewHtml}
+            <div class="file-info" style="margin-left:12px">
+              <div class="file-name">${escapeHtml(file.name)}</div>
               <div class="file-size">${size} • ${date}</div>
             </div>
             <div class="file-actions">
@@ -1415,7 +1550,6 @@
           filesList.appendChild(item);
         });
 
-        // Update statistics with file count
         updateStatistics();
       } catch (error) {
         console.error('Помилка завантаження файлів:', error);
@@ -1445,32 +1579,64 @@
       }
     }
 
-    document.querySelector('#fileInput').addEventListener('change', async (e) => {
-      const files = e.target.files;
-      const label = document.querySelector('.file-upload label');
-      const originalText = label.textContent;
+    // ==================== DRAG & DROP ====================
+    const dropZone = document.getElementById('dropZone');
 
-      if (files.length === 0) return;
+    ['dragenter', 'dragover'].forEach(evt => {
+      dropZone.addEventListener(evt, (e) => {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(evt => {
+      dropZone.addEventListener(evt, (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+      });
+    });
+
+    dropZone.addEventListener('drop', async (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        await uploadFiles(files);
+      }
+    });
+
+    document.querySelector('#fileInput').addEventListener('change', async (e) => {
+      if (e.target.files.length > 0) {
+        await uploadFiles(e.target.files);
+        e.target.value = '';
+      }
+    });
+
+    async function uploadFiles(files) {
+      const label = document.querySelector('.file-upload');
+      const uploadText = label.querySelector('.upload-text');
+      const originalText = uploadText.textContent;
 
       label.classList.add('uploading');
-      label.textContent = '⏳ Завантаження...';
+      uploadText.textContent = `⏳ Завантаження ${files.length} файл(ів)...`;
 
+      let uploaded = 0;
       for (const file of files) {
         const formData = new FormData();
         formData.append('file', file);
-
         try {
           await fetch('/api/upload', { method: 'POST', body: formData });
+          uploaded++;
+          realStats.uploads++;
         } catch (error) {
-          console.error('Помилка завантаження файлу:', error);
+          console.error('Помилка:', error);
         }
       }
 
       label.classList.remove('uploading');
-      label.textContent = originalText;
-      e.target.value = '';
+      uploadText.textContent = originalText;
+      showNotification(`✅ Завантажено ${uploaded} файл(ів)`, 'success');
+      logActivity('Завантаження файлів', `${uploaded} файл(ів)`);
       loadFiles();
-    });
+    }
 
     async function downloadFile(filename) {
       const url = `/api/download/${encodeURIComponent(filename)}`;
@@ -1491,15 +1657,15 @@
         });
 
         if (response.ok) {
-          showNotification('✅ Файл видалено!');
+          showNotification('🗑️ Файл видалено!', 'success');
           loadFiles();
         } else {
           const error = await response.json();
-          showNotification(`❌ Помилка: ${error.error || 'Не вдалося видалити файл'}`);
+          showNotification(`❌ Помилка: ${error.error || 'Не вдалося видалити'}`, 'error');
         }
       } catch (error) {
         console.error('Помилка видалення файлу:', error);
-        showNotification('❌ Помилка видалення файлу');
+        showNotification('❌ Помилка видалення файлу', 'error');
       }
     }
 
@@ -1548,30 +1714,16 @@
       return div.innerHTML;
     }
 
-    function showNotification(message) {
-      const notification = document.createElement('div');
-      notification.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
-        color: #fff;
-        padding: 16px 32px;
-        border-radius: 12px;
-        z-index: 2000;
-        animation: slideUp 0.3s ease-out;
-        font-weight: 600;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
-      `;
-      notification.textContent = message;
-      document.body.appendChild(notification);
-
+    function showNotification(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      container.appendChild(toast);
       setTimeout(() => {
-        notification.classList.add('fade-out');
-        setTimeout(() => notification.remove(), 2000);
-      }, 1500);
+        toast.classList.add('out');
+        setTimeout(() => toast.remove(), 300);
+      }, 2200);
     }
 
     // ==================== ТЕМЫ И ЦВЕТА ====================
@@ -1732,7 +1884,7 @@
     let charts = {};
 
     function initCharts() {
-      // Heatmap Chart (Активність по годинах)
+      // Heatmap Chart (Реальна активність по годинах)
       const heatmapCtx = document.getElementById('heatmapChart').getContext('2d');
       charts.heatmap = new Chart(heatmapCtx, {
         type: 'bar',
@@ -1740,7 +1892,7 @@
           labels: Array.from({length: 24}, (_, i) => `${i}:00`),
           datasets: [{
             label: 'Активність',
-            data: generateRandomData(24, 0, 100),
+            data: new Array(24).fill(0),
             backgroundColor: 'rgba(102, 126, 234, 0.8)',
             borderColor: 'rgba(102, 126, 234, 1)',
             borderWidth: 1
@@ -1749,15 +1901,13 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
+          animation: false,
+          plugins: { legend: { display: false } },
           scales: {
             y: {
               beginAtZero: true,
               grid: { color: 'rgba(255, 255, 255, 0.1)' },
-              ticks: { color: '#a0a0b0' },
-              max: 100
+              ticks: { color: '#a0a0b0', precision: 0 }
             },
             x: {
               grid: { display: false },
@@ -1774,18 +1924,19 @@
         data: {
           labels: ['Виконано', 'В процесі'],
           datasets: [{
-            data: [30, 70],
+            data: [0, 0],
             backgroundColor: [
               'rgba(79, 172, 254, 0.8)',
               'rgba(245, 87, 108, 0.8)'
             ],
             borderWidth: 2,
-            borderColor: '#ffffff'
+            borderColor: '#1a1a2e'
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          animation: false,
           plugins: {
             legend: {
               position: 'bottom',
@@ -1795,90 +1946,65 @@
         }
       });
 
-      // Line Chart (Зміни по часу)
+      // Line Chart (Загальна активність)
       const lineCtx = document.getElementById('lineChart').getContext('2d');
       charts.line = new Chart(lineCtx, {
         type: 'line',
         data: {
-          labels: Array.from({length: 12}, (_, i) => `${i + 1} год`),
+          labels: [],
           datasets: [{
-            label: 'Зміни',
-            data: generateRandomData(12, 10, 50),
+            label: 'Дії',
+            data: [],
             borderColor: 'rgba(102, 126, 234, 1)',
             backgroundColor: 'rgba(102, 126, 234, 0.1)',
             borderWidth: 2,
             fill: true,
-            tension: 0.4
+            tension: 0.4,
+            pointRadius: 3
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
+          animation: false,
+          plugins: { legend: { display: false } },
           scales: {
             y: {
               beginAtZero: true,
               grid: { color: 'rgba(255, 255, 255, 0.1)' },
-              ticks: { color: '#a0a0b0' },
-              max: 100
+              ticks: { color: '#a0a0b0', precision: 0 }
             },
             x: {
               grid: { display: false },
-              ticks: { color: '#a0a0b0' }
+              ticks: { color: '#a0a0b0', font: { size: 9 }, maxTicksLimit: 6 }
             }
           }
         }
       });
     }
 
-    function generateRandomData(count, min, max) {
-      return Array.from({length: count}, () => Math.floor(Math.random() * (max - min + 1)) + min);
-    }
-
     function updateCharts() {
-      // Обновляем данные графиков
       const now = new Date();
-      const currentHour = now.getHours();
 
-      // Heatmap - симулируем активность с жестким ограничением роста
-      const heatmapData = charts.heatmap.data.datasets[0].data;
-      
-      // Сбрасываем данные каждые 10 минут для предотвращения бесконечного роста
-      if (now.getMinutes() % 10 === 0 && now.getSeconds() < 5) {
-        // Сбрасываем все значения каждые 10 минут
-        heatmapData.fill(0);
-      }
-      
-      // Просто устанавливаем новое случайное значение, а не добавляем
-      const newValue = Math.floor(Math.random() * 20) + 5; // Случайное значение от 5 до 25
-      
-      // Жестко ограничиваем максимальное значение
-      heatmapData[currentHour] = Math.min(newValue, 50);
-      charts.heatmap.update();
+      // Heatmap — реальна активність по годинах
+      charts.heatmap.data.datasets[0].data = [...realStats.hourlyActivity];
+      charts.heatmap.update('none');
 
-      // Pie Chart - обновляем статистику задач
+      // Pie Chart — реальна статистика задач
       const totalTasks = notesData.tasks?.length || 0;
       const completedTasks = notesData.tasks?.filter(t => t.completed).length || 0;
       const inProgressTasks = totalTasks - completedTasks;
-
       charts.pie.data.datasets[0].data = [completedTasks, inProgressTasks];
-      charts.pie.update();
+      charts.pie.update('none');
 
-      // Line Chart - добавляем новую точку с ограничением
+      // Line Chart — накопичена активність (буфер + нотатки + файли)
+      const totalActivity = realStats.clipboardChanges + realStats.taskChanges + realStats.uploads;
       const lineData = charts.line.data.datasets[0].data;
       const lineLabels = charts.line.data.labels;
-      if (lineData.length >= 12) {
-        lineData.shift();
-        lineLabels.shift();
-      }
-      
-      // Генерируем значение в разумных пределах
-      const newValueLine = Math.floor(Math.random() * 30) + 5;
-      lineData.push(newValueLine);
-      lineLabels.push(new Date().toLocaleTimeString('uk-UA', { minute: '2-digit', second: '2-digit' }));
-      charts.line.update();
+      if (lineData.length >= 20) { lineData.shift(); lineLabels.shift(); }
+      lineData.push(totalActivity);
+      lineLabels.push(now.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      charts.line.update('none');
     }
 
     // ==================== АКТИВНІСТЬ ТА ЛОГУВАННЯ ====================
@@ -1920,18 +2046,12 @@
     }
 
     // Логирование основных действий
-    document.querySelector('#clipboard button').addEventListener('click', () => {
+    document.getElementById('clipboardSaveBtn').addEventListener('click', () => {
       logActivity('Збереження буфера', document.querySelector('#clipboard textarea').value.substring(0, 30) + '...');
     });
 
     document.querySelector('.add-task-btn').addEventListener('click', () => {
       logActivity('Додавання завдання');
-    });
-
-    document.querySelector('#fileInput').addEventListener('change', (e) => {
-      if (e.target.files.length > 0) {
-        logActivity('Завантаження файлів', `${e.target.files.length} файл(ів)`);
-      }
     });
 
     // ==================== СИНХРОНІЗАЦІЯ ====================
@@ -2029,55 +2149,16 @@
     }
 
     // ==================== КАМЕРА ====================
-    let useFrontCamera = true;
-
-    async function startCamera() {
-        const constraints = {
-            video: {
-                facingMode: useFrontCamera ? 'user' : 'environment'
-            }
-        };
-
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia(constraints);
-            const videoElement = document.getElementById('camera-feed');
-            videoElement.srcObject = stream;
-        } catch (error) {
-            console.error('Error accessing camera:', error);
-        }
-    }
-
-    document.querySelector('[data-screen="camera"]').addEventListener('click', () => {
-        startCamera();
-    });
-
-    document.getElementById('flip-camera').addEventListener('click', () => {
-        useFrontCamera = !useFrontCamera;
-        startCamera();
-    });
-
-    document.getElementById('take-photo').addEventListener('click', () => {
-        const video = document.getElementById('camera-feed');
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const context = canvas.getContext('2d');
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = 'photo.png';
-        link.click();
-    });
+    // (видалено)
 
     // Periodic update of statistics
-    setInterval(updateStatistics, 2000);
-    setInterval(loadFileStatistics, 3000);
-    setInterval(updateCharts, 5000); // Обновляем графики каждые 5 секунд
+    setInterval(updateStatistics, 5000);
+    setInterval(loadFileStatistics, 10000);
+    setInterval(updateCharts, 3000);
 
     // Initial load
     loadFileStatistics();
-    logActivity('Приложение запущено');
+    logActivity('Додаток запущено');
   </script>
 </body>
 </html>
