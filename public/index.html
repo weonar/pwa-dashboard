@@ -934,11 +934,11 @@
     <!-- НАВИГАЦИЯ -->
     <nav>
       <button class="nav-btn active" data-screen="website">🌐 Сайт</button>
-      <button class="nav-btn" data-screen="clock">🕐 Часы</button>
+      <button class="nav-btn" data-screen="clock">🕐 Годинник</button>
       <button class="nav-btn" data-screen="statistics">📊 Статистика</button>
       <button class="nav-btn" data-screen="clipboard">📋 Буфер</button>
-      <button class="nav-btn" data-screen="notes">📝 Заметки</button>
-      <button class="nav-btn" data-screen="files">📁 Файлы</button>
+      <button class="nav-btn" data-screen="notes">📝 Нотатки</button>
+      <button class="nav-btn" data-screen="files">📁 Файли</button>
     </nav>
 
     <!-- СОДЕРЖАНИЕ -->
@@ -948,21 +948,21 @@
         <iframe src="https://hearts-together.vercel.app/"></iframe>
       </div>
 
-      <!-- ЭКРАН 2: ЧАСЫ -->
+      <!-- ЕКРАН 2: ГОДИННИК -->
       <div id="clock" class="screen">
         <div class="clock-container">
           <div class="clock-display">
             <div class="time" id="clockTime">00:00:00</div>
-            <div class="date" id="clockDate">Понедельник, 1 января</div>
+            <div class="date" id="clockDate">Понеділок, 1 січня</div>
           </div>
         </div>
       </div>
 
-      <!-- ЭКРАН 3: СТАТИСТИКА -->
+      <!-- ЕКРАН 3: СТАТИСТИКА -->
       <div id="statistics" class="screen">
         <h2>📊 Статистика</h2>
         
-        <!-- Темы и настройки -->
+        <!-- Теми та налаштування -->
         <div class="themes-panel">
           <div class="themes-grid">
             <button class="theme-btn active" data-theme="default">Default</button>
@@ -1040,84 +1040,84 @@
             <div class="stat-detail" id="stat-devices-time">Синхро: --</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Буфер обмена</div>
+            <div class="stat-label">Буфер обміну</div>
             <div class="stat-value" id="stat-clipboard">0</div>
-            <div class="stat-detail" id="stat-clipboard-chars">символов</div>
+            <div class="stat-detail" id="stat-clipboard-chars">символів</div>
           </div>
         </div>
 
-        <!-- Синхронизация и активность -->
+        <!-- Синхронізація та активність -->
         <div class="sync-status">
           <div class="sync-indicator">
             <div class="sync-dot" id="sync-dot"></div>
-            <span id="sync-status-text">Сервер не подключен</span>
+            <span id="sync-status-text">Сервер не підключено</span>
           </div>
           <div class="activity-log">
             <div class="activity-item">
-              <span>Загрузка приложения</span>
-              <span class="activity-time">Только что</span>
+              <span>Завантаження додатку</span>
+              <span class="activity-time">Щойно</span>
             </div>
           </div>
         </div>
 
-        <!-- Графики -->
+        <!-- Графіки -->
         <div class="charts-grid">
           <div class="chart-card">
             <div class="chart-header">
-              <div class="chart-title">Активность по часам</div>
-              <div class="chart-subtitle">Тепловая карта активности</div>
+              <div class="chart-title">Активність по годинах</div>
+              <div class="chart-subtitle">Теплова карта активності</div>
             </div>
             <canvas id="heatmapChart"></canvas>
           </div>
           
           <div class="chart-card">
             <div class="chart-header">
-              <div class="chart-title">Статистика задач</div>
-              <div class="chart-subtitle">Выполнено vs В процессе</div>
+              <div class="chart-title">Статистика завдань</div>
+              <div class="chart-subtitle">Виконано vs В процесі</div>
             </div>
             <canvas id="pieChart"></canvas>
           </div>
           
           <div class="chart-card">
             <div class="chart-header">
-              <div class="chart-title">Изменения по времени</div>
-              <div class="chart-subtitle">Линейный график активности</div>
+              <div class="chart-title">Зміни по часу</div>
+              <div class="chart-subtitle">Лінійний графік активності</div>
             </div>
             <canvas id="lineChart"></canvas>
           </div>
         </div>
       </div>
 
-      <!-- ЭКРАН 4: БУФЕР ОБМЕНА -->
+      <!-- ЕКРАН 4: БУФЕР ОБМІНУ -->
       <div id="clipboard" class="screen">
-        <h2>📋 Буфер обмена</h2>
-        <textarea placeholder="Введи текст для синхронизации между всеми устройствами..."></textarea>
-        <button>💾 Сохранить</button>
+        <h2>📋 Буфер обміну</h2>
+        <textarea placeholder="Введіть текст для синхронізації між усіма пристроями..."></textarea>
+        <button>💾 Зберегти</button>
       </div>
 
-      <!-- ЭКРАН 4: ЗАМЕТКИ -->
+      <!-- ЕКРАН 4: НОТАТКИ -->
       <div id="notes" class="screen">
-        <h2>📝 Заметки</h2>
+        <h2>📝 Нотатки</h2>
         <div class="notes-mode">
           <button class="mode-btn active" data-mode="text">📄 Текст</button>
-          <button class="mode-btn" data-mode="tasks">✓ Задачи</button>
+          <button class="mode-btn" data-mode="tasks">✓ Завдання</button>
         </div>
-        <textarea placeholder="Введи текст заметки..."></textarea>
+        <textarea placeholder="Введіть текст нотатки..."></textarea>
         <div class="tasks-container">
           <div class="task-item" style="display: none;"></div>
         </div>
-        <button class="add-task-btn" style="display: none;">➕ Добавить задачу</button>
+        <button class="add-task-btn" style="display: none;">➕ Додати завдання</button>
       </div>
 
-      <!-- ЭКРАН 5: ФАЙЛЫ -->
+      <!-- ЕКРАН 5: ФАЙЛИ -->
       <div id="files" class="screen">
-        <h2>📁 Файлы</h2>
+        <h2>📁 Файли</h2>
         <div class="file-upload">
           <input type="file" id="fileInput" multiple>
-          <label for="fileInput">📤 Загрузить файлы</label>
+          <label for="fileInput">📤 Завантажити файли</label>
         </div>
         <div class="files-list">
-          <div class="empty-message">Файлов нет, загрузи первый файл</div>
+          <div class="empty-message">Файлів немає, завантажте перший файл</div>
         </div>
       </div>
     </div>
@@ -1160,7 +1160,7 @@
       ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {
-        console.log('✅ WebSocket подключен');
+        console.log('✅ WebSocket підключено');
         wsReconnectAttempts = 0;
         updateConnectionStatus(true);
       };
@@ -1186,18 +1186,18 @@
             loadFiles();
           }
         } catch (error) {
-          console.error('Ошибка обработки сообщения:', error);
+          console.error('Помилка обробки повідомлення:', error);
         }
       };
 
       ws.onclose = () => {
-        console.log('❌ WebSocket отключен');
+        console.log('❌ WebSocket відключено');
         updateConnectionStatus(false);
         attemptReconnect();
       };
 
       ws.onerror = (error) => {
-        console.error('WebSocket ошибка:', error);
+        console.error('WebSocket помилка:', error);
         updateConnectionStatus(false);
       };
     }
@@ -1206,10 +1206,10 @@
       if (wsReconnectAttempts < maxReconnectAttempts) {
         wsReconnectAttempts++;
         const delay = Math.min(1000 * Math.pow(2, wsReconnectAttempts), 30000);
-        console.log(`⏳ Переподключение через ${delay}ms...`);
+        console.log(`⏳ Перепідключення через ${delay}ms...`);
         setTimeout(connectWebSocket, delay);
       } else {
-        console.error('❌ Не удалось подключиться после нескольких попыток');
+        console.error('❌ Не вдалося підключитися після декількох спроб');
       }
     }
 
@@ -1226,11 +1226,11 @@
       if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ type, ...data }));
       } else {
-        console.warn('WebSocket не подключен');
+        console.warn('WebSocket не підключено');
       }
     }
 
-    // ==================== БУФЕР ОБМЕНА ====================
+    // ==================== БУФЕР ОБМІНУ ====================
     function loadClipboard(content) {
       const textarea = document.querySelector('#clipboard textarea');
       textarea.value = content;
@@ -1239,7 +1239,7 @@
     document.querySelector('#clipboard button').addEventListener('click', () => {
       const textarea = document.querySelector('#clipboard textarea');
       sendWebSocketMessage('clipboard', { content: textarea.value });
-      showNotification('✅ Сохранено!');
+      showNotification('✅ Збережено!');
     });
 
     document.querySelector('#clipboard textarea').addEventListener('input', () => {
@@ -1356,7 +1356,7 @@
     }
 
     function addTask() {
-      notesData.tasks.push({ text: 'Новая задача', completed: false });
+      notesData.tasks.push({ text: 'Нове завдання', completed: false });
       renderTasks(notesData.tasks);
       saveNotes();
     }
@@ -1375,7 +1375,7 @@
       sendWebSocketMessage('notes', { data: notesData });
     }
 
-    // ==================== ФАЙЛЫ ====================
+    // ==================== ФАЙЛИ ====================
     async function loadFiles() {
       try {
         const response = await fetch('/api/files');
@@ -1383,7 +1383,7 @@
         const filesList = document.querySelector('.files-list');
 
         if (files.length === 0) {
-          filesList.innerHTML = '<div class="empty-message">📂 Файлов нет</div>';
+          filesList.innerHTML = '<div class="empty-message">📂 Файлів немає</div>';
           return;
         }
 
@@ -1393,7 +1393,7 @@
           item.className = 'file-item';
 
           const size = formatFileSize(file.size);
-          const date = new Date(file.modified).toLocaleString('ru-RU');
+          const date = new Date(file.modified).toLocaleString('uk-UA');
 
           item.innerHTML = `
             <div class="file-info">
@@ -1412,7 +1412,7 @@
         // Update statistics with file count
         updateStatistics();
       } catch (error) {
-        console.error('Ошибка загрузки файлов:', error);
+        console.error('Помилка завантаження файлів:', error);
       }
     }
 
@@ -1433,9 +1433,9 @@
 
         // Devices count
         document.getElementById('stat-devices').textContent = stats.devices || 0;
-        document.getElementById('stat-devices-time').textContent = `Синхро: ${new Date(stats.lastSync).toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})}`;
+        document.getElementById('stat-devices-time').textContent = `Синхро: ${new Date(stats.lastSync).toLocaleTimeString('uk-UA', {hour: '2-digit', minute: '2-digit'})}`;
       } catch (error) {
-        console.error('Ошибка загрузки статистики:', error);
+        console.error('Помилка завантаження статистики:', error);
       }
     }
 
@@ -1447,7 +1447,7 @@
       if (files.length === 0) return;
 
       label.classList.add('uploading');
-      label.textContent = '⏳ Загрузка...';
+      label.textContent = '⏳ Завантаження...';
 
       for (const file of files) {
         const formData = new FormData();
@@ -1456,7 +1456,7 @@
         try {
           await fetch('/api/upload', { method: 'POST', body: formData });
         } catch (error) {
-          console.error('Ошибка загрузки файла:', error);
+          console.error('Помилка завантаження файлу:', error);
         }
       }
 
@@ -1477,7 +1477,7 @@
     }
 
     async function deleteFile(filename) {
-      if (!confirm(`Удалить файл: ${filename}?`)) return;
+      if (!confirm(`Видалити файл: ${filename}?`)) return;
 
       try {
         const response = await fetch(`/api/files/${encodeURIComponent(filename)}`, {
@@ -1485,15 +1485,15 @@
         });
 
         if (response.ok) {
-          showNotification('✅ Файл удален!');
+          showNotification('✅ Файл видалено!');
           loadFiles();
         } else {
           const error = await response.json();
-          showNotification(`❌ Ошибка: ${error.error || 'Не удалось удалить файл'}`);
+          showNotification(`❌ Помилка: ${error.error || 'Не вдалося видалити файл'}`);
         }
       } catch (error) {
-        console.error('Ошибка удаления файла:', error);
-        showNotification('❌ Ошибка удаления файла');
+        console.error('Помилка видалення файлу:', error);
+        showNotification('❌ Помилка видалення файлу');
       }
     }
 
@@ -1749,14 +1749,14 @@
     let charts = {};
 
     function initCharts() {
-      // Heatmap Chart (Активность по часам)
+      // Heatmap Chart (Активність по годинах)
       const heatmapCtx = document.getElementById('heatmapChart').getContext('2d');
       charts.heatmap = new Chart(heatmapCtx, {
         type: 'bar',
         data: {
           labels: Array.from({length: 24}, (_, i) => `${i}:00`),
           datasets: [{
-            label: 'Активность',
+            label: 'Активність',
             data: generateRandomData(24, 0, 100),
             backgroundColor: 'rgba(102, 126, 234, 0.8)',
             borderColor: 'rgba(102, 126, 234, 1)',
@@ -1773,7 +1773,8 @@
             y: {
               beginAtZero: true,
               grid: { color: 'rgba(255, 255, 255, 0.1)' },
-              ticks: { color: '#a0a0b0' }
+              ticks: { color: '#a0a0b0' },
+              max: 100
             },
             x: {
               grid: { display: false },
@@ -1783,12 +1784,12 @@
         }
       });
 
-      // Pie Chart (Статистика задач)
+      // Pie Chart (Статистика завдань)
       const pieCtx = document.getElementById('pieChart').getContext('2d');
       charts.pie = new Chart(pieCtx, {
         type: 'doughnut',
         data: {
-          labels: ['Выполнено', 'В процессе'],
+          labels: ['Виконано', 'В процесі'],
           datasets: [{
             data: [30, 70],
             backgroundColor: [
@@ -1811,14 +1812,14 @@
         }
       });
 
-      // Line Chart (Изменения по времени)
+      // Line Chart (Зміни по часу)
       const lineCtx = document.getElementById('lineChart').getContext('2d');
       charts.line = new Chart(lineCtx, {
         type: 'line',
         data: {
-          labels: Array.from({length: 12}, (_, i) => `${i + 1} ч`),
+          labels: Array.from({length: 12}, (_, i) => `${i + 1} год`),
           datasets: [{
-            label: 'Изменения',
+            label: 'Зміни',
             data: generateRandomData(12, 10, 50),
             borderColor: 'rgba(102, 126, 234, 1)',
             backgroundColor: 'rgba(102, 126, 234, 0.1)',
@@ -1837,7 +1838,8 @@
             y: {
               beginAtZero: true,
               grid: { color: 'rgba(255, 255, 255, 0.1)' },
-              ticks: { color: '#a0a0b0' }
+              ticks: { color: '#a0a0b0' },
+              max: 100
             },
             x: {
               grid: { display: false },
@@ -1877,12 +1879,12 @@
       charts.line.update();
     }
 
-    // ==================== АКТИВНОСТЬ И ЛОГИРОВАНИЕ ====================
+    // ==================== АКТИВНІСТЬ ТА ЛОГУВАННЯ ====================
     const activityLog = [];
 
     function logActivity(action, details = '') {
       const now = new Date();
-      const timeStr = now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
+      const timeStr = now.toLocaleTimeString('uk-UA', {hour: '2-digit', minute: '2-digit'});
       const logEntry = {
         time: timeStr,
         action: action,
@@ -1917,37 +1919,37 @@
 
     // Логирование основных действий
     document.querySelector('#clipboard button').addEventListener('click', () => {
-      logActivity('Сохранение буфера', document.querySelector('#clipboard textarea').value.substring(0, 30) + '...');
+      logActivity('Збереження буфера', document.querySelector('#clipboard textarea').value.substring(0, 30) + '...');
     });
 
     document.querySelector('.add-task-btn').addEventListener('click', () => {
-      logActivity('Добавление задачи');
+      logActivity('Додавання завдання');
     });
 
     document.querySelector('#fileInput').addEventListener('change', (e) => {
       if (e.target.files.length > 0) {
-        logActivity('Загрузка файлов', `${e.target.files.length} файл(ов)`);
+        logActivity('Завантаження файлів', `${e.target.files.length} файл(ів)`);
       }
     });
 
-    // ==================== СИНХРОНИЗАЦИЯ ====================
+    // ==================== СИНХРОНІЗАЦІЯ ====================
     function updateSyncStatus(connected, lastSync = null) {
       const dot = document.getElementById('sync-dot');
       const text = document.getElementById('sync-status-text');
 
       if (connected) {
         dot.classList.add('connected');
-        text.textContent = 'Сервер подключен';
+        text.textContent = 'Сервер підключено';
         text.style.color = 'var(--gradient-primary-1)';
       } else {
         dot.classList.remove('connected');
-        text.textContent = 'Сервер не подключен';
+        text.textContent = 'Сервер не підключено';
         text.style.color = '#a0a0b0';
       }
 
       if (lastSync) {
-        const timeStr = new Date(lastSync).toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
-        logActivity('Синхронизация', `Последняя: ${timeStr}`);
+        const timeStr = new Date(lastSync).toLocaleTimeString('uk-UA', {hour: '2-digit', minute: '2-digit'});
+        logActivity('Синхронізація', `Остання: ${timeStr}`);
       }
     }
 
@@ -1968,7 +1970,7 @@
     loadFiles();
     initCharts();
 
-    // ==================== ЧАСЫ ====================
+    // ==================== ГОДИННИК ====================
     function updateClock() {
       // Получаем текущее время
       const now = new Date();
@@ -1989,14 +1991,14 @@
       };
 
       // Время HH:MM:SS
-      const timeString = now.toLocaleTimeString('ru-RU', timeOptions);
+      const timeString = now.toLocaleTimeString('uk-UA', timeOptions);
       const timeElement = document.getElementById('clockTime');
       if (timeElement) {
         timeElement.textContent = timeString;
       }
 
       // Дата (День недели, число месяца)
-      const dateString = now.toLocaleDateString('ru-RU', dateOptions);
+      const dateString = now.toLocaleDateString('uk-UA', dateOptions);
       const dateElement = document.getElementById('clockDate');
       if (dateElement) {
         dateElement.textContent = dateString;
