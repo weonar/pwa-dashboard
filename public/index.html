@@ -620,6 +620,200 @@
       color: var(--text-secondary);
     }
 
+    /* ==================== ГРАФИКИ ==================== */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .chart-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .chart-card:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .chart-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .chart-subtitle {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    canvas {
+      width: 100%;
+      height: 200px;
+    }
+
+    /* ==================== ТЕМЫ ==================== */
+    .themes-panel {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+      margin-bottom: 16px;
+    }
+
+    .themes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .theme-btn {
+      padding: 8px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: left;
+    }
+
+    .theme-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .theme-btn.active {
+      background: linear-gradient(135deg, var(--gradient-primary-1) 0%, var(--gradient-primary-2) 100%);
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .color-controls {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .color-group {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .color-group h4 {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .color-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .color-row label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      width: 40px;
+      flex-shrink: 0;
+    }
+
+    .color-row input[type="color"] {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .sync-status {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .sync-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .sync-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(245, 87, 108, 0.6);
+      box-shadow: 0 0 8px rgba(245, 87, 108, 0.4);
+    }
+
+    .sync-dot.connected {
+      background: rgba(79, 172, 254, 0.8);
+      animation: pulse 2s infinite;
+      box-shadow: 0 0 12px rgba(79, 172, 254, 0.6);
+    }
+
+    .activity-log {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .activity-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .activity-item:last-child {
+      border-bottom: none;
+    }
+
+    .activity-time {
+      color: var(--text-tertiary);
+      font-size: 11px;
+    }
+
     /* ==================== АДАПТИВ ==================== */
     @media (min-width: 768px) {
       .container {
@@ -766,6 +960,68 @@
       <!-- ЭКРАН 3: СТАТИСТИКА -->
       <div id="statistics" class="screen">
         <h2>📊 Статистика</h2>
+        
+        <!-- Темы и настройки -->
+        <div class="themes-panel">
+          <div class="themes-grid">
+            <button class="theme-btn active" data-theme="default">Default</button>
+            <button class="theme-btn" data-theme="ocean">Ocean</button>
+            <button class="theme-btn" data-theme="sunset">Sunset</button>
+            <button class="theme-btn" data-theme="forest">Forest</button>
+            <button class="theme-btn" data-theme="cyberpunk">Cyberpunk</button>
+            <button class="theme-btn" data-theme="midnight">Midnight</button>
+          </div>
+          
+          <div class="color-controls">
+            <div class="color-group">
+              <h4>Primary Gradient</h4>
+              <div class="color-row">
+                <label>Start</label>
+                <input type="color" id="color-primary-1" value="#667eea">
+                <label>End</label>
+                <input type="color" id="color-primary-2" value="#764ba2">
+              </div>
+            </div>
+            <div class="color-group">
+              <h4>Secondary Gradient</h4>
+              <div class="color-row">
+                <label>Start</label>
+                <input type="color" id="color-secondary-1" value="#f093fb">
+                <label>End</label>
+                <input type="color" id="color-secondary-2" value="#f5576c">
+              </div>
+            </div>
+            <div class="color-group">
+              <h4>Tertiary Gradient</h4>
+              <div class="color-row">
+                <label>Start</label>
+                <input type="color" id="color-tertiary-1" value="#4facfe">
+                <label>End</label>
+                <input type="color" id="color-tertiary-2" value="#00f2fe">
+              </div>
+            </div>
+            <div class="color-group">
+              <h4>Background Gradient</h4>
+              <div class="color-row">
+                <label>Start</label>
+                <input type="color" id="color-bg-1" value="#0f0f1e">
+                <label>End</label>
+                <input type="color" id="color-bg-2" value="#1a1a2e">
+              </div>
+            </div>
+            <div class="color-group">
+              <h4>Text Colors</h4>
+              <div class="color-row">
+                <label>Primary</label>
+                <input type="color" id="color-text-primary" value="#e0e0e0">
+                <label>Secondary</label>
+                <input type="color" id="color-text-secondary" value="#a0a0b0">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Статистика -->
         <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-label">Завдання</div>
@@ -786,6 +1042,47 @@
             <div class="stat-label">Буфер обмена</div>
             <div class="stat-value" id="stat-clipboard">0</div>
             <div class="stat-detail" id="stat-clipboard-chars">символов</div>
+          </div>
+        </div>
+
+        <!-- Синхронизация и активность -->
+        <div class="sync-status">
+          <div class="sync-indicator">
+            <div class="sync-dot" id="sync-dot"></div>
+            <span id="sync-status-text">Сервер не подключен</span>
+          </div>
+          <div class="activity-log">
+            <div class="activity-item">
+              <span>Загрузка приложения</span>
+              <span class="activity-time">Только что</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Графики -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title">Активность по часам</div>
+              <div class="chart-subtitle">Тепловая карта активности</div>
+            </div>
+            <canvas id="heatmapChart"></canvas>
+          </div>
+          
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title">Статистика задач</div>
+              <div class="chart-subtitle">Выполнено vs В процессе</div>
+            </div>
+            <canvas id="pieChart"></canvas>
+          </div>
+          
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title">Изменения по времени</div>
+              <div class="chart-subtitle">Линейный график активности</div>
+            </div>
+            <canvas id="lineChart"></canvas>
           </div>
         </div>
       </div>
@@ -1293,9 +1590,382 @@
       }, 1500);
     }
 
+    // ==================== ТЕМЫ И ЦВЕТА ====================
+    const themes = {
+      default: {
+        primary1: '#667eea',
+        primary2: '#764ba2',
+        secondary1: '#f093fb',
+        secondary2: '#f5576c',
+        tertiary1: '#4facfe',
+        tertiary2: '#00f2fe',
+        bg1: '#0f0f1e',
+        bg2: '#1a1a2e',
+        textPrimary: '#e0e0e0',
+        textSecondary: '#a0a0b0'
+      },
+      ocean: {
+        primary1: '#00c6ff',
+        primary2: '#0072ff',
+        secondary1: '#a8edea',
+        secondary2: '#fed6e3',
+        tertiary1: '#74b9ff',
+        tertiary2: '#0984e3',
+        bg1: '#0f2027',
+        bg2: '#203a43',
+        textPrimary: '#ffffff',
+        textSecondary: '#bdc3c7'
+      },
+      sunset: {
+        primary1: '#ff9a9e',
+        primary2: '#fecfef',
+        secondary1: '#f093fb',
+        secondary2: '#f5576c',
+        tertiary1: '#ffdde1',
+        tertiary2: '#ee9ca7',
+        bg1: '#2c3e50',
+        bg2: '#34495e',
+        textPrimary: '#ffffff',
+        textSecondary: '#ecf0f1'
+      },
+      forest: {
+        primary1: '#56ab2f',
+        primary2: '#a8e6cf',
+        secondary1: '#43cea2',
+        secondary2: '#185a9d',
+        tertiary1: '#5dffba',
+        tertiary2: '#2af598',
+        bg1: '#1a2a3a',
+        bg2: '#2c3e50',
+        textPrimary: '#ffffff',
+        textSecondary: '#bdc3c7'
+      },
+      cyberpunk: {
+        primary1: '#ff0080',
+        primary2: '#7928ca',
+        secondary1: '#00f260',
+        secondary2: '#0575e6',
+        tertiary1: '#f093fb',
+        tertiary2: '#f5576c',
+        bg1: '#0f0f23',
+        bg2: '#1a1a3a',
+        textPrimary: '#ffffff',
+        textSecondary: '#c0c0ff'
+      },
+      midnight: {
+        primary1: '#141e30',
+        primary2: '#243b55',
+        secondary1: '#3a7bd5',
+        secondary2: '#3a6073',
+        tertiary1: '#000000',
+        tertiary2: '#434343',
+        bg1: '#000000',
+        bg2: '#1a1a1a',
+        textPrimary: '#ffffff',
+        textSecondary: '#888888'
+      }
+    };
+
+    function applyTheme(themeName) {
+      const theme = themes[themeName];
+      if (!theme) return;
+
+      document.documentElement.style.setProperty('--gradient-primary-1', theme.primary1);
+      document.documentElement.style.setProperty('--gradient-primary-2', theme.primary2);
+      document.documentElement.style.setProperty('--gradient-secondary-1', theme.secondary1);
+      document.documentElement.style.setProperty('--gradient-secondary-2', theme.secondary2);
+      document.documentElement.style.setProperty('--gradient-tertiary-1', theme.tertiary1);
+      document.documentElement.style.setProperty('--gradient-tertiary-2', theme.tertiary2);
+      document.documentElement.style.setProperty('--gradient-bg-1', theme.bg1);
+      document.documentElement.style.setProperty('--gradient-bg-2', theme.bg2);
+      document.documentElement.style.setProperty('--text-primary', theme.textPrimary);
+      document.documentElement.style.setProperty('--text-secondary', theme.textSecondary);
+
+      // Сохраняем выбранную тему
+      localStorage.setItem('selectedTheme', themeName);
+
+      // Обновляем активные кнопки
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === themeName);
+      });
+
+      // Обновляем цветовые пикеры
+      document.getElementById('color-primary-1').value = theme.primary1;
+      document.getElementById('color-primary-2').value = theme.primary2;
+      document.getElementById('color-secondary-1').value = theme.secondary1;
+      document.getElementById('color-secondary-2').value = theme.secondary2;
+      document.getElementById('color-tertiary-1').value = theme.tertiary1;
+      document.getElementById('color-tertiary-2').value = theme.tertiary2;
+      document.getElementById('color-bg-1').value = theme.bg1;
+      document.getElementById('color-bg-2').value = theme.bg2;
+      document.getElementById('color-text-primary').value = theme.textPrimary;
+      document.getElementById('color-text-secondary').value = theme.textSecondary;
+    }
+
+    function applyCustomColors() {
+      const colors = {
+        primary1: document.getElementById('color-primary-1').value,
+        primary2: document.getElementById('color-primary-2').value,
+        secondary1: document.getElementById('color-secondary-1').value,
+        secondary2: document.getElementById('color-secondary-2').value,
+        tertiary1: document.getElementById('color-tertiary-1').value,
+        tertiary2: document.getElementById('color-tertiary-2').value,
+        bg1: document.getElementById('color-bg-1').value,
+        bg2: document.getElementById('color-bg-2').value,
+        textPrimary: document.getElementById('color-text-primary').value,
+        textSecondary: document.getElementById('color-text-secondary').value
+      };
+
+      Object.entries(colors).forEach(([key, value]) => {
+        const cssVar = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
+        document.documentElement.style.setProperty(cssVar, value);
+      });
+
+      // Сбрасываем выбранную тему, так как теперь используются кастомные цвета
+      localStorage.removeItem('selectedTheme');
+      document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+    }
+
+    // Инициализация тем
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+      btn.addEventListener('click', () => applyTheme(btn.dataset.theme));
+    });
+
+    // Цветовые пикеры
+    document.querySelectorAll('input[type="color"]').forEach(input => {
+      input.addEventListener('input', applyCustomColors);
+    });
+
+    // Загрузка сохраненной темы
+    const savedTheme = localStorage.getItem('selectedTheme');
+    if (savedTheme) {
+      applyTheme(savedTheme);
+    } else {
+      applyTheme('default');
+    }
+
+    // ==================== ГРАФИКИ ====================
+    let charts = {};
+
+    function initCharts() {
+      // Heatmap Chart (Активность по часам)
+      const heatmapCtx = document.getElementById('heatmapChart').getContext('2d');
+      charts.heatmap = new Chart(heatmapCtx, {
+        type: 'bar',
+        data: {
+          labels: Array.from({length: 24}, (_, i) => `${i}:00`),
+          datasets: [{
+            label: 'Активность',
+            data: generateRandomData(24, 0, 100),
+            backgroundColor: 'rgba(102, 126, 234, 0.8)',
+            borderColor: 'rgba(102, 126, 234, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(255, 255, 255, 0.1)' },
+              ticks: { color: '#a0a0b0' }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#a0a0b0', font: { size: 10 } }
+            }
+          }
+        }
+      });
+
+      // Pie Chart (Статистика задач)
+      const pieCtx = document.getElementById('pieChart').getContext('2d');
+      charts.pie = new Chart(pieCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Выполнено', 'В процессе'],
+          datasets: [{
+            data: [30, 70],
+            backgroundColor: [
+              'rgba(79, 172, 254, 0.8)',
+              'rgba(245, 87, 108, 0.8)'
+            ],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: '#a0a0b0' }
+            }
+          }
+        }
+      });
+
+      // Line Chart (Изменения по времени)
+      const lineCtx = document.getElementById('lineChart').getContext('2d');
+      charts.line = new Chart(lineCtx, {
+        type: 'line',
+        data: {
+          labels: Array.from({length: 12}, (_, i) => `${i + 1} ч`),
+          datasets: [{
+            label: 'Изменения',
+            data: generateRandomData(12, 10, 50),
+            borderColor: 'rgba(102, 126, 234, 1)',
+            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: 'rgba(255, 255, 255, 0.1)' },
+              ticks: { color: '#a0a0b0' }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: '#a0a0b0' }
+            }
+          }
+        }
+      });
+    }
+
+    function generateRandomData(count, min, max) {
+      return Array.from({length: count}, () => Math.floor(Math.random() * (max - min + 1)) + min);
+    }
+
+    function updateCharts() {
+      // Обновляем данные графиков
+      const now = new Date();
+      const currentHour = now.getHours();
+
+      // Heatmap - симулируем активность
+      const heatmapData = charts.heatmap.data.datasets[0].data;
+      heatmapData[currentHour] = (heatmapData[currentHour] || 0) + Math.floor(Math.random() * 10) + 5;
+      charts.heatmap.update();
+
+      // Pie Chart - обновляем статистику задач
+      const totalTasks = notesData.tasks?.length || 0;
+      const completedTasks = notesData.tasks?.filter(t => t.completed).length || 0;
+      const inProgressTasks = totalTasks - completedTasks;
+
+      charts.pie.data.datasets[0].data = [completedTasks, inProgressTasks];
+      charts.pie.update();
+
+      // Line Chart - добавляем новую точку
+      const lineData = charts.line.data.datasets[0].data;
+      if (lineData.length >= 12) lineData.shift();
+      lineData.push(Math.floor(Math.random() * 40) + 10);
+      charts.line.update();
+    }
+
+    // ==================== АКТИВНОСТЬ И ЛОГИРОВАНИЕ ====================
+    const activityLog = [];
+
+    function logActivity(action, details = '') {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
+      const logEntry = {
+        time: timeStr,
+        action: action,
+        details: details,
+        timestamp: now.getTime()
+      };
+
+      activityLog.unshift(logEntry);
+
+      // Ограничиваем лог 20 последними записями
+      if (activityLog.length > 20) {
+        activityLog.length = 20;
+      }
+
+      renderActivityLog();
+    }
+
+    function renderActivityLog() {
+      const container = document.querySelector('.activity-log');
+      container.innerHTML = '';
+
+      activityLog.forEach(entry => {
+        const item = document.createElement('div');
+        item.className = 'activity-item';
+        item.innerHTML = `
+          <span>${entry.action}${entry.details ? ': ' + entry.details : ''}</span>
+          <span class="activity-time">${entry.time}</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // Логирование основных действий
+    document.querySelector('#clipboard button').addEventListener('click', () => {
+      logActivity('Сохранение буфера', document.querySelector('#clipboard textarea').value.substring(0, 30) + '...');
+    });
+
+    document.querySelector('.add-task-btn').addEventListener('click', () => {
+      logActivity('Добавление задачи');
+    });
+
+    document.querySelector('#fileInput').addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        logActivity('Загрузка файлов', `${e.target.files.length} файл(ов)`);
+      }
+    });
+
+    // ==================== СИНХРОНИЗАЦИЯ ====================
+    function updateSyncStatus(connected, lastSync = null) {
+      const dot = document.getElementById('sync-dot');
+      const text = document.getElementById('sync-status-text');
+
+      if (connected) {
+        dot.classList.add('connected');
+        text.textContent = 'Сервер подключен';
+        text.style.color = 'var(--gradient-primary-1)';
+      } else {
+        dot.classList.remove('connected');
+        text.textContent = 'Сервер не подключен';
+        text.style.color = '#a0a0b0';
+      }
+
+      if (lastSync) {
+        const timeStr = new Date(lastSync).toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'});
+        logActivity('Синхронизация', `Последняя: ${timeStr}`);
+      }
+    }
+
+    // Расширенный updateConnectionStatus
+    function updateConnectionStatus(connected) {
+      const indicator = document.querySelector('.status-indicator');
+      if (connected) {
+        indicator.classList.add('connected');
+        updateSyncStatus(true, Date.now());
+      } else {
+        indicator.classList.remove('connected');
+        updateSyncStatus(false);
+      }
+    }
+
     // ==================== ЗАПУСК ====================
     connectWebSocket();
     loadFiles();
+    initCharts();
 
     // ==================== ЧАСЫ ====================
     function updateClock() {
@@ -1338,9 +2008,11 @@
     // Periodic update of statistics
     setInterval(updateStatistics, 2000);
     setInterval(loadFileStatistics, 3000);
+    setInterval(updateCharts, 5000); // Обновляем графики каждые 5 секунд
 
     // Initial load
     loadFileStatistics();
+    logActivity('Приложение запущено');
   </script>
 </body>
 </html>
