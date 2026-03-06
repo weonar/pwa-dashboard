@@ -876,12 +876,17 @@
         notesData.content = textarea.value;
       }
 
-      // Обновляем UI
+      // Обновляем UI локально (не отправляем на сервер сразу)
       updateNotesModeUI(mode);
 
-      // Обновляем режим в данных и сохраняем
+      // Обновляем режим в данных
       notesData.mode = mode;
-      saveNotes();
+
+      // Сохраняем на сервер через 500мс, чтобы не спамить
+      clearTimeout(window.modeTimeout);
+      window.modeTimeout = setTimeout(() => {
+        saveNotes();
+      }, 500);
     }
 
     document.querySelectorAll('.mode-btn').forEach(btn => {
