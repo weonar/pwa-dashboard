@@ -3822,10 +3822,10 @@
             <div class="admin-user-actions">
               ${u.id !== currentUser.id ? `
                 <button class="admin-role-btn ${u.role === 'admin' ? 'cabinet-role-badge admin' : 'cabinet-role-badge user'}"
-                  onclick="toggleUserRole(${u.id}, '${u.role}')">
+                  onclick="toggleUserRole(${u._id}, '${u.role}')">
                   ${u.role === 'admin' ? '→ user' : '→ admin'}
                 </button>
-                <button class="admin-delete-btn" onclick="deleteUser(${u.id})">✕</button>
+                <button class="admin-delete-btn" onclick="deleteUser('${u.id}')">✕</button>
               ` : '<span style="font-size:11px;color:var(--text-secondary)">це ви</span>'}
             </div>
           `;
