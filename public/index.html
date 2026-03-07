@@ -2879,7 +2879,7 @@
       `;
     }
 
-    function cancelDeleteConfirm(btn, filename) {
+    async function cancelDeleteConfirm(btn, filename) {
       const actions = btn.closest('.file-actions');
       actions.innerHTML = `
         <button class="download" onclick="downloadFile('${escapeHtml(filename)}')">⬇️</button>
@@ -3776,7 +3776,7 @@
     }
 
     // ==================== КАБІНЕТ ====================
-    function togglePwForm() {
+    async function togglePwForm() {
       document.getElementById('pwChangeForm').classList.toggle('open');
     }
 
