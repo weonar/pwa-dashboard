@@ -164,17 +164,24 @@ if (mailer) {
 
 async function sendMail(to, subject, html) {
   if (!mailer) {
-    console.log(`[EMAIL] To: ${to}\nSubject: ${subject}\n${html.replace(/<[^>]+>/g,'')}`);
+    console.log(`[EMAIL STUB] To: ${to} | Subject: ${subject}`);
+    console.log('[EMAIL STUB] Причина: SMTP_USER не задано в env змінних');
     return;
   }
-  // Таймаут 10 секунд щоб не висіти вічно
+  console.log(`[EMAIL] Відправка на ${to}...`);
   const timeout = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error('Email timeout')), 10000)
+    setTimeout(() => reject(new Error('Email timeout after 15s')), 15000)
   );
-  await Promise.race([
-    mailer.sendMail({ from: SMTP_USER, to, subject, html }),
-    timeout
-  ]);
+  try {
+    const info = await Promise.race([
+      mailer.sendMail({ from: `"PWA Dashboard" <${SMTP_USER}>`, to, subject, html }),
+      timeout
+    ]);
+    console.log(`[EMAIL] Успішно відправлено: ${info.messageId}`);
+  } catch(e) {
+    console.error(`[EMAIL] Помилка відправки на ${to}:`, e.message);
+    throw e;
+  }
 }
 
 // ==================== APP ====================

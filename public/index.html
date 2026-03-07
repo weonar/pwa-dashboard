@@ -2785,8 +2785,7 @@
         try {
           const uploadRes = await apiFetch('/api/upload', {
             method: 'POST',
-            body: formData,
-            headers: {}  // не ставимо Content-Type — браузер сам додасть boundary для FormData
+            body: formData
           });
           if (uploadRes.ok) {
             uploaded++;
@@ -3435,7 +3434,14 @@
     });
 
     async function apiFetch(url, opts = {}) {
-      const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+      const headers = {};
+      // Додаємо Content-Type тільки якщо це не FormData
+      if (!(opts.body instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
+      }
+      // Додаємо кастомні заголовки
+      Object.assign(headers, opts.headers || {});
+      // Завжди додаємо токен
       if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
       const res = await fetch(url, { ...opts, headers });
       return res;
