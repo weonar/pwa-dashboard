@@ -1,3 +1,6 @@
+// Завантажуємо .env якщо є
+try { require('dotenv').config(); } catch {}
+
 // ==================== КОНФІГ ====================
 const PORT       = process.env.PORT       || 3000;
 const HDD_PATH   = process.env.HDD_PATH   || './uploads';
@@ -139,9 +142,22 @@ const db = new JsonDB(path.join(DATA_DIR, 'users.json'));
 
 // ==================== NODEMAILER ====================
 const mailer = SMTP_USER ? nodemailer.createTransport({
-  service: 'gmail',
-  auth: { user: SMTP_USER, pass: SMTP_PASS }
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: { user: SMTP_USER, pass: SMTP_PASS },
+  tls: { rejectUnauthorized: false }
 }) : null;
+
+// Перевіряємо з'єднання при старті
+if (mailer) {
+  mailer.verify().then(() => {
+    console.log('✅ Gmail SMTP підключено:', SMTP_USER);
+  }).catch(err => {
+    console.error('❌ Gmail SMTP помилка:', err.message);
+    console.error('   Перевір SMTP_USER і SMTP_PASS в .env');
+  });
+}
 
 async function sendMail(to, subject, html) {
   if (!mailer) {

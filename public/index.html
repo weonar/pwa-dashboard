@@ -13,6 +13,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='grad' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%23667eea;stop-opacity:1' /><stop offset='100%' style='stop-color:%23764ba2;stop-opacity:1' /></linearGradient></defs><rect fill='url(%23grad)' width='192' height='192' rx='40'/><text x='96' y='130' font-size='100' fill='white' text-anchor='middle' font-weight='bold'>D</text></svg>">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 
   <style>
     /* ==================== CSS VARIABLES SYSTEM ==================== */
@@ -1814,6 +1815,94 @@
 
     .admin-delete-btn:hover { background: rgba(245,87,108,0.3); }
 
+
+    /* ==================== QR SCANNER ==================== */
+    #qrScannerModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 9999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    #qrScannerModal.open { display: flex; }
+
+    .qr-scanner-box {
+      width: 100%;
+      max-width: 360px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .qr-scanner-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+    }
+
+    .qr-scanner-header h3 {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .qr-scanner-close {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      border: none;
+      color: var(--text-primary);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    #qrVideo {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      display: block;
+      background: #000;
+    }
+
+    .qr-scanner-overlay {
+      position: relative;
+    }
+
+    .qr-scanner-frame {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .qr-scanner-frame::before {
+      content: '';
+      width: 200px;
+      height: 200px;
+      border: 2px solid #667eea;
+      border-radius: 16px;
+      box-shadow: 0 0 0 2000px rgba(0,0,0,0.4);
+    }
+
+    .qr-scanner-status {
+      padding: 14px 20px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-align: center;
+      min-height: 48px;
+    }
+
+    .qr-scanner-status.success { color: #2ed573; }
+    .qr-scanner-status.error   { color: #f5576c; }
   </style>
 </head>
 <body>
@@ -3526,54 +3615,76 @@
       } catch { showAuthError('Помилка QR-входу'); }
     }
 
+    // ==================== QR SCANNER ====================
+    let qrScannerStream = null;
+    let qrScannerInterval = null;
+
     function showQrLogin() {
-      clearAuthMessages();
-      document.getElementById('loginForm').classList.add('hidden');
-      document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+      openQrScanner();
+    }
 
-      let qrLoginForm = document.getElementById('qrLoginForm');
-      if (!qrLoginForm) {
-        qrLoginForm = document.createElement('form');
-        qrLoginForm.id = 'qrLoginForm';
-        qrLoginForm.className = 'auth-form';
-        qrLoginForm.onsubmit = () => false;
-        qrLoginForm.innerHTML = `
-          <div style="text-align:center;padding:8px 0 4px">
-            <div style="font-size:40px;margin-bottom:8px">📱</div>
-            <p style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:6px">Вхід через QR-код</p>
-            <p style="font-size:12px;color:var(--text-secondary);line-height:1.6">
-              1. Відкрий Dashboard на іншому пристрої де вже залогінений<br>
-              2. Перейди в <b style="color:#667eea">Кабінет → Згенерувати QR-код</b><br>
-              3. Відскануй QR камерою цього телефону — вхід відбудеться автоматично
-            </p>
-          </div>
-          <div style="border-top:1px solid rgba(255,255,255,0.08);margin:8px 0"></div>
-          <p style="font-size:12px;color:var(--text-secondary);text-align:center">Або введіть токен вручну:</p>
-          <div class="auth-field">
-            <label>Токен або повне QR-посилання</label>
-            <input type="text" id="qrManualToken" placeholder="вставте посилання або токен">
-          </div>
-          <button class="auth-btn" onclick="doQrManualLogin()">Увійти</button>
-          <button class="auth-tab" style="flex:none;width:100%;margin-top:6px" onclick="showAuthTab('login')">← Назад</button>
-        `;
-        const loginForm = document.getElementById('loginForm');
-        loginForm.parentNode.insertBefore(qrLoginForm, loginForm.nextSibling);
-      } else {
-        qrLoginForm.classList.remove('hidden');
+    function openQrScanner() {
+      const modal = document.getElementById('qrScannerModal');
+      const status = document.getElementById('qrScannerStatus');
+      modal.classList.add('open');
+      status.textContent = 'Запуск камери...';
+      status.className = 'qr-scanner-status';
+
+      navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 640 } }
+      }).then(stream => {
+        qrScannerStream = stream;
+        const video = document.getElementById('qrVideo');
+        video.srcObject = stream;
+        video.play();
+        status.textContent = 'Наведіть камеру на QR-код';
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        qrScannerInterval = setInterval(() => {
+          if (video.readyState !== video.HAVE_ENOUGH_DATA) return;
+          canvas.width  = video.videoWidth;
+          canvas.height = video.videoHeight;
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height);
+          if (code) {
+            const url = code.data;
+            // Витягуємо qr-токен з URL
+            let token = null;
+            try {
+              const parsed = new URL(url);
+              token = parsed.searchParams.get('qr');
+            } catch {}
+            if (token) {
+              clearInterval(qrScannerInterval);
+              status.textContent = '✅ QR знайдено! Вхід...';
+              status.className = 'qr-scanner-status success';
+              setTimeout(() => {
+                closeQrScanner();
+                tryQRLogin(token);
+              }, 600);
+            }
+          }
+        }, 200);
+      }).catch(err => {
+        status.textContent = '❌ Немає доступу до камери: ' + err.message;
+        status.className = 'qr-scanner-status error';
+      });
+    }
+
+    function closeQrScanner() {
+      clearInterval(qrScannerInterval);
+      if (qrScannerStream) {
+        qrScannerStream.getTracks().forEach(t => t.stop());
+        qrScannerStream = null;
       }
+      document.getElementById('qrVideo').srcObject = null;
+      document.getElementById('qrScannerModal').classList.remove('open');
     }
 
-    async function doQrManualLogin() {
-      const raw = (document.getElementById('qrManualToken').value || '').trim();
-      if (!raw) { showAuthError('Введіть токен або посилання'); return; }
-      let token = raw;
-      try {
-        const url = new URL(raw);
-        token = url.searchParams.get('qr') || raw;
-      } catch {}
-      await tryQRLogin(token);
-    }
-
+    funct
     // ==================== КАБІНЕТ ====================
     function togglePwForm() {
       document.getElementById('pwChangeForm').classList.toggle('open');
@@ -3686,5 +3797,20 @@
     })();
 
   </script>
+
+  <!-- QR SCANNER MODAL -->
+  <div id="qrScannerModal">
+    <div class="qr-scanner-box">
+      <div class="qr-scanner-header">
+        <h3>📷 Сканування QR-коду</h3>
+        <button class="qr-scanner-close" onclick="closeQrScanner()">✕</button>
+      </div>
+      <div class="qr-scanner-overlay">
+        <video id="qrVideo" autoplay muted playsinline></video>
+        <div class="qr-scanner-frame"></div>
+      </div>
+      <div class="qr-scanner-status" id="qrScannerStatus">Наведіть камеру на QR-код</div>
+    </div>
+  </div>
 </body>
 </html>
