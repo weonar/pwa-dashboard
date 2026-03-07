@@ -1925,7 +1925,7 @@
       <div id="authSuccess" class="auth-success"></div>
 
       <!-- Форма входу -->
-      <form class="auth-form" id="loginForm" onsubmit="return false">
+      <form class="auth-form" id="loginForm" onsubmit="return false" style="display:none">
         <div class="auth-field">
           <label>Email або нікнейм</label>
           <input type="text" id="loginLogin" placeholder="user@email.com" autocomplete="username">
@@ -3394,6 +3394,9 @@
 
     // Periodic update of statistics
     setInterval(updateStatistics, 5000);
+    let currentUser = null;
+    let authToken   = localStorage.getItem('authToken');
+
     setInterval(loadFileStatistics, 10000);
     setInterval(updateCharts, 3000);
 
@@ -3403,8 +3406,6 @@
 
 
     // ==================== AUTH ====================
-    let currentUser = null;
-    let authToken   = localStorage.getItem('authToken');
 
     const SCREEN_TITLES_EXTRA = {
       cabinet:    '👤 Кабінет',
@@ -3423,15 +3424,22 @@
     }
 
     function showAuthTab(tab) {
-      document.querySelectorAll('.auth-tab').forEach((b, i) => {
-        b.classList.toggle('active', ['login','register'][i] === tab || b.textContent.includes(tab === 'login' ? 'Вхід' : 'Реєст'));
+      // Оновлюємо активний таб
+      document.querySelectorAll('.auth-tab').forEach(b => {
+        const isLogin = b.textContent.trim() === 'Вхід';
+        const isReg   = b.textContent.trim() === 'Реєстрація';
+        b.classList.toggle('active', (tab === 'login' && isLogin) || (tab === 'register' && isReg));
       });
-      document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
-      document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
-      document.getElementById('forgotForm').classList.add('hidden');
-      document.getElementById('resetForm').classList.add('hidden');
+      // Ховаємо всі форми
+      ['loginForm','registerForm','forgotForm','resetForm'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
       const qrForm = document.getElementById('qrLoginForm');
-      if (qrForm) qrForm.classList.add('hidden');
+      if (qrForm) qrForm.style.display = 'none';
+      // Показуємо потрібну
+      const target = tab === 'login' ? 'loginForm' : 'registerForm';
+      document.getElementById(target).style.display = 'flex';
       clearAuthMessages();
     }
 
@@ -3709,7 +3717,6 @@
       document.getElementById('qrScannerModal').classList.remove('open');
     }
 
-    funct
     // ==================== КАБІНЕТ ====================
     function togglePwForm() {
       document.getElementById('pwChangeForm').classList.toggle('open');
@@ -3784,10 +3791,6 @@
     // ==================== ІНІЦІАЛІЗАЦІЯ AUTH ====================
     async function initAuth() {
       const params = new URLSearchParams(window.location.search);
-      console.log('[initAuth] params:', window.location.search);
-      console.log('[initAuth] reset token:', params.get('reset'));
-      console.log('[initAuth] resetForm exists:', !!document.getElementById('resetForm'));
-
       if (params.get('reset')) {
         resetToken = params.get('reset');
         document.getElementById('authOverlay').style.display = 'flex';

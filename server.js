@@ -521,7 +521,7 @@ app.get('/api/download/:filename', flexAuthMiddleware, (req, res) => {
 const clients = new Map();
 
 wss.on('connection', (ws) => {
-  const clientId = crypto.randomUUID();
+  const clientId = crypto.randomBytes(16).toString('hex');
   let userId = null;
 
   ws.on('message', async (raw) => {
