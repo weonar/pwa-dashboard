@@ -150,8 +150,18 @@ const mailer = SMTP_USER ? nodemailer.createTransport({
 if (mailer) mailer.verify().then(() => console.log('Gmail SMTP OK')).catch(e => console.error('Gmail SMTP err:', e.message));
 
 async function sendMail(to, subject, html) {
-  if (!mailer) { console.log(`[EMAIL] To: ${to}\nSubject: ${subject}\n${html.replace(/<[^>]+>/g,'')}`); return; }
-  await mailer.sendMail({ from: SMTP_USER, to, subject, html });
+  if (!mailer) {
+    console.log(`[EMAIL] To: ${to}\nSubject: ${subject}\n${html.replace(/<[^>]+>/g,'')}`);
+    return;
+  }
+  // Таймаут 10 секунд щоб не висіти вічно
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Email timeout')), 10000)
+  );
+  await Promise.race([
+    mailer.sendMail({ from: SMTP_USER, to, subject, html }),
+    timeout
+  ]);
 }
 
 // ==================== APP ====================
@@ -219,13 +229,15 @@ app.post('/api/auth/register', async (req, res) => {
 
     if (!isFirst) {
       const verifyUrl = `${BASE_URL}/api/auth/verify/${verifyToken}`;
-      await sendMail(email, 'Підтвердіть email — PWA Dashboard', `
+      // Відповідаємо одразу — не чекаємо email
+      res.json({ ok: true, message: 'Реєстрація успішна! Перевірте пошту.' });
+      // Відправляємо email у фоні
+      sendMail(email, 'Підтвердіть email — PWA Dashboard', `
         <div style="font-family:sans-serif;max-width:480px;margin:auto">
           <h2>Привіт, ${username}!</h2>
           <p>Підтвердіть вашу email-адресу:</p>
           <a href="${verifyUrl}" style="display:inline-block;padding:12px 24px;background:#667eea;color:#fff;border-radius:8px;text-decoration:none;font-weight:700">Підтвердити email</a>
-        </div>`);
-      res.json({ ok: true, message: 'Реєстрація успішна! Перевірте пошту.' });
+        </div>`).catch(e => console.error('Register email error:', e.message));
     } else {
       res.json({ ok: true, message: 'Акаунт адміна створено! Можете увійти.' });
     }
@@ -265,12 +277,12 @@ app.post('/api/auth/resend-verification', async (req, res) => {
     const verifyToken = crypto.randomBytes(32).toString('hex');
     await db.collection('users').updateOne({ _id: user._id }, { $set: { verify_token: verifyToken } });
     const verifyUrl = `${BASE_URL}/api/auth/verify/${verifyToken}`;
-    await sendMail(user.email, 'Підтвердіть email — PWA Dashboard', `
+    res.json({ ok: true });
+    sendMail(user.email, 'Підтвердіть email — PWA Dashboard', `
       <div style="font-family:sans-serif;max-width:480px;margin:auto">
         <h2>Підтвердження email</h2>
         <a href="${verifyUrl}" style="display:inline-block;padding:12px 24px;background:#667eea;color:#fff;border-radius:8px;text-decoration:none;font-weight:700">Підтвердити email</a>
-      </div>`);
-    res.json({ ok: true });
+      </div>`).catch(e => console.error('Resend email error:', e.message));
   } catch (e) { res.status(500).json({ error: 'Помилка сервера' }); }
 });
 
@@ -282,13 +294,13 @@ app.post('/api/auth/forgot', async (req, res) => {
     const token = crypto.randomBytes(32).toString('hex');
     await db.collection('users').updateOne({ _id: user._id }, { $set: { reset_token: token, reset_expiry: Date.now() + 3600000 } });
     const resetUrl = `${BASE_URL}/?reset=${token}`;
-    await sendMail(email, 'Скидання пароля — PWA Dashboard', `
+    res.json({ ok: true });
+    sendMail(email, 'Скидання пароля — PWA Dashboard', `
       <div style="font-family:sans-serif;max-width:480px;margin:auto">
         <h2>Скидання пароля</h2>
         <p>Посилання діє 1 годину.</p>
         <a href="${resetUrl}" style="display:inline-block;padding:12px 24px;background:#f5576c;color:#fff;border-radius:8px;text-decoration:none;font-weight:700">Скинути пароль</a>
-      </div>`);
-    res.json({ ok: true });
+      </div>`).catch(e => console.error('Forgot email error:', e.message));
   } catch (e) { res.status(500).json({ error: 'Помилка сервера' }); }
 });
 
