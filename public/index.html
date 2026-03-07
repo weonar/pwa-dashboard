@@ -3843,8 +3843,13 @@
 
     async function deleteUser(userId) {
       if (!confirm('Видалити користувача? Всі його дані будуть втрачені.')) return;
-      await apiFetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
-      loadAdminUsers();
+      const res = await apiFetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+      if (res.ok) {
+        loadAdminUsers();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        alert('Помилка: ' + (data.error || res.status));
+      }
     }
 
     // ==================== ІНІЦІАЛІЗАЦІЯ AUTH ====================
