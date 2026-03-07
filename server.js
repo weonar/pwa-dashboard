@@ -16,7 +16,7 @@ const JWT_SECRET  = process.env.JWT_SECRET  || 'change_this_secret_in_production
 const BASE_URL    = process.env.BASE_URL    || `http://localhost:${PORT}`;
 const SMTP_USER   = process.env.SMTP_USER   || '';
 const SMTP_PASS   = process.env.SMTP_PASS   || '';
-const MONGODB_URI = process.env.MONGODB_URI || '';
+const MONGODB_URI = (process.env.MONGODB_URI || '').replace(/^"|"$/g, '').trim();
 
 // ==================== ЗАЛЕЖНОСТІ ====================
 const express     = require('express');
@@ -146,25 +146,17 @@ async function findUser(q) {
 }
 
 // ==================== MAILER ====================
-// Спробуємо port 587 (STARTTLS) — надійніший на хмарних платформах
+// Gmail SMTP через port 465 (SSL) — Render блокує 587
 const mailer = SMTP_USER ? nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,       // false = STARTTLS
+  service: 'gmail',  // nodemailer знає правильні налаштування Gmail
   auth: { user: SMTP_USER, pass: SMTP_PASS },
   tls: { rejectUnauthorized: false },
-  connectionTimeout: 8000,
-  greetingTimeout: 8000,
-  socketTimeout: 8000,
 }) : null;
 
 if (mailer) {
   mailer.verify()
-    .then(() => console.log('✅ Gmail SMTP OK (port 587)'))
-    .catch(e => {
-      console.error('❌ Gmail SMTP port 587 failed:', e.message);
-      console.error('   Перевір: SMTP_USER, SMTP_PASS, та що App Password правильний');
-    });
+    .then(() => console.log('✅ Gmail SMTP OK'))
+    .catch(e => console.error('❌ Gmail SMTP failed:', e.message));
 }
 
 async function sendMail(to, subject, html) {
@@ -195,8 +187,17 @@ const server = http.createServer(app);
 const wss    = new WebSocket.Server({ server });
 
 app.use(express.static('public'));
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ limit: '10mb', extended: true }));
+// JSON middleware тільки для не-multipart запитів
+app.use((req, res, next) => {
+  const ct = req.headers['content-type'] || '';
+  if (ct.includes('multipart/form-data')) return next(); // multer сам обробить
+  express.json({ limit: '10mb' })(req, res, next);
+});
+app.use((req, res, next) => {
+  const ct = req.headers['content-type'] || '';
+  if (ct.includes('multipart/form-data')) return next();
+  express.urlencoded({ limit: '10mb', extended: true })(req, res, next);
+});
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 100 * 1024 * 1024 } });
 
