@@ -2305,6 +2305,10 @@
   </div>
 
   <script>
+    // ==================== ГЛОБАЛЬНІ ЗМІННІ AUTH (мають бути першими) ====================
+    let authToken = localStorage.getItem('authToken');
+    let currentUser = null;
+
     // ==================== ИНИЦИАЛИЗАЦИЯ ====================
     const screens = {};
     let currentScreen = 'website';
@@ -3411,8 +3415,7 @@
 
     // Periodic update of statistics
     setInterval(updateStatistics, 5000);
-    let currentUser = null;
-    let authToken   = localStorage.getItem('authToken');
+    // authToken і currentUser оголошені на початку скрипта
 
     setInterval(loadFileStatistics, 10000);
     setInterval(updateCharts, 3000);

@@ -1,9 +1,14 @@
 // Завантажуємо .env
 try { require('dotenv').config(); } catch (e) { console.warn('dotenv не знайдено'); }
 
-console.log('SMTP_USER:', process.env.SMTP_USER ? '✅ ' + process.env.SMTP_USER : '❌ не знайдено');
-console.log('MONGODB_URI:', process.env.MONGODB_URI ? '✅ підключено' : '❌ не знайдено');
-console.log('CLOUDINARY_URL:', process.env.CLOUDINARY_URL ? '✅ підключено' : '❌ не знайдено');
+console.log('=== ENV ПЕРЕВІРКА ===');
+console.log('SMTP_USER:    ', process.env.SMTP_USER    ? '✅ ' + process.env.SMTP_USER : '❌ ВІДСУТНІЙ — email не працюватиме');
+console.log('SMTP_PASS:    ', process.env.SMTP_PASS    ? '✅ задано' : '❌ ВІДСУТНІЙ');
+console.log('MONGODB_URI:  ', process.env.MONGODB_URI  ? '✅ задано' : '❌ ВІДСУТНІЙ — in-memory режим');
+console.log('CLOUDINARY_URL:', process.env.CLOUDINARY_URL ? '✅ задано' : '❌ ВІДСУТНІЙ — файли не працюватимуть');
+console.log('JWT_SECRET:   ', process.env.JWT_SECRET   ? '✅ задано' : '⚠️  використовується дефолтний — небезпечно!');
+console.log('BASE_URL:     ', process.env.BASE_URL     || '⚠️  не задано — посилання в листах будуть неправильні');
+console.log('====================');
 
 // ==================== КОНФІГ ====================
 const PORT        = process.env.PORT        || 3000;
