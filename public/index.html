@@ -1904,6 +1904,9 @@
     .qr-scanner-status.success { color: #2ed573; }
     .qr-scanner-status.error   { color: #f5576c; }
   </style>
+  <!-- Firebase для лічильника сердечок -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 </head>
 <body>
   <!-- AUTH OVERLAY -->
@@ -2011,7 +2014,9 @@
     <div class="content-wrapper">
       <!-- ЭКРАН 1: САЙТ -->
       <div id="website" class="screen active">
-        <iframe src="https://hearts-together.vercel.app/" 
+        <iframe src="https://hearts-together.vercel.app/"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+          
           onerror="this.style.display='none'; document.getElementById('iframe-fallback').style.display='flex'"
           onload="document.getElementById('iframe-fallback').style.display='none'">
         </iframe>
@@ -2061,6 +2066,11 @@
             <div class="stat-label">Буфер обміну</div>
             <div class="stat-value" id="stat-clipboard">0</div>
             <div class="stat-detail" id="stat-clipboard-chars">символів</div>
+          </div>
+          <div class="stat-card" style="border-color:rgba(255,102,153,0.3);background:rgba(255,102,153,0.06)">
+            <div class="stat-label">❤️ Сердечок</div>
+            <div class="stat-value" id="stat-hearts" style="color:#ff6699">—</div>
+            <div class="stat-detail" id="stat-hearts-time">Останнє: —</div>
           </div>
         </div>
 
@@ -2773,9 +2783,17 @@
         const formData = new FormData();
         formData.append('file', file);
         try {
-          await fetch('/api/upload', { method: 'POST', body: formData });
-          uploaded++;
-          realStats.uploads++;
+          const uploadRes = await apiFetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+            headers: {}  // не ставимо Content-Type — браузер сам додасть boundary для FormData
+          });
+          if (uploadRes.ok) {
+            uploaded++;
+            realStats.uploads++;
+          } else {
+            console.error('Upload failed:', uploadRes.status, await uploadRes.text());
+          }
         } catch (error) {
           console.error('Помилка:', error);
         }
@@ -3827,6 +3845,41 @@
 
     // Запускаємо одразу — скрипт в кінці body, DOM вже готовий
     initAuth();
+
+    // ==================== FIREBASE HEARTS ====================
+    (function initHeartsFirebase() {
+      try {
+        const firebaseConfig = {
+          apiKey: "AIzaSyB__WvDfoLvm9bwgnRhNKSRANYVcXMisS4",
+          authDomain: "hearts-together.firebaseapp.com",
+          databaseURL: "https://hearts-together-default-rtdb.europe-west1.firebasedatabase.app",
+          projectId: "hearts-together",
+          storageBucket: "hearts-together.firebasestorage.app",
+          messagingSenderId: "642150540728",
+          appId: "1:642150540728:web:df92777e950a6ab60cdb4d"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const heartRef = firebase.database().ref('heart');
+        heartRef.on('value', snapshot => {
+          const data = snapshot.val();
+          const el = document.getElementById('stat-hearts');
+          const elTime = document.getElementById('stat-hearts-time');
+          if (!el) return;
+          if (data && data.count) {
+            el.textContent = data.count;
+            if (data.time) {
+              const t = new Date(data.time).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
+              elTime.textContent = 'Останнє: ' + t;
+            }
+          } else {
+            el.textContent = '0';
+            elTime.textContent = 'Ще не було';
+          }
+        });
+      } catch(e) {
+        console.warn('Firebase hearts error:', e.message);
+      }
+    })();
 
   </script>
 
