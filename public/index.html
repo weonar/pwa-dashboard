@@ -3912,21 +3912,23 @@
 
       // Пробуємо відновити сесію
       if (authToken) {
-        // Спробуємо відновити сесію — до 3 спроб (Render може спати)
+        console.log('[initAuth] Token found, trying /api/auth/me...');
         let restored = false;
         for (let attempt = 1; attempt <= 3; attempt++) {
           try {
             const res  = await apiFetch('/api/auth/me');
+            console.log('[initAuth] attempt', attempt, 'status:', res.status);
             const data = await res.json();
+            console.log('[initAuth] response:', data);
             if (res.ok) { await afterLogin(data); restored = true; break; }
-            if (res.status === 401) break; // Токен точно недійсний — не пробуємо
-            // Інша помилка (500, 503) — сервер ще спить, чекаємо
+            if (res.status === 401) { console.log('[initAuth] 401 - invalid token'); break; }
             if (attempt < 3) await new Promise(r => setTimeout(r, 3000));
           } catch(e) {
-            console.warn(`Session restore attempt ${attempt} failed:`, e.message);
+            console.warn(`[initAuth] attempt ${attempt} error:`, e.message);
             if (attempt < 3) await new Promise(r => setTimeout(r, 3000));
           }
         }
+        console.log('[initAuth] restored:', restored);
         if (restored) return;
         localStorage.removeItem('authToken');
         authToken = null;
