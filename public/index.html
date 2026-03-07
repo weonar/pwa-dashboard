@@ -2338,11 +2338,26 @@
     async function sendEmailViaEmailJS(to, subject, html) {
       if (EMAILJS_PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY') return false;
       try {
+        // Витягуємо посилання з HTML
+        const linkMatch = html.match(/href="([^"]+)"/);
+        const link = linkMatch ? linkMatch[1] : '';
+        const isVerify = subject.includes('Підтвердіть');
+        const isReset  = subject.includes('Скидання');
+
         await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
           to_email: to,
           subject:  subject,
-          message:  html.replace(/<[^>]+>/g, ''), // plain text
-          html:     html,
+          message:  isVerify
+            ? `Підтвердіть вашу email-адресу:
+
+${link}`
+            : isReset
+            ? `Посилання для скидання пароля (діє 1 годину):
+
+${link}`
+            : html.replace(/<[^>]+>/g, ''),
+          link:     link,
+          link_text: isVerify ? 'Підтвердити email' : 'Скинути пароль',
         });
         return true;
       } catch(e) {
@@ -3605,7 +3620,9 @@
       const btn = document.querySelector('#forgotForm .auth-btn');
       btn.disabled = true; btn.textContent = 'Надсилаємо...';
       try {
-        await apiFetch('/api/auth/forgot', { method:'POST', body: JSON.stringify({ email }) });
+        const res = await apiFetch('/api/auth/forgot', { method:'POST', body: JSON.stringify({ email }) });
+        const data = await res.json();
+        if (data.emailTo) await sendEmailViaEmailJS(data.emailTo, data.emailSubject, data.emailHtml).catch(()=>{});
         showAuthSuccess('Якщо email існує — лист надіслано. Перевірте пошту.');
       } catch { showAuthError('Помилка підключення'); }
       finally { btn.disabled = false; btn.textContent = 'Надіслати лист'; }
