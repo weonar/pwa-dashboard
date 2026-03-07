@@ -1908,6 +1908,8 @@
   <!-- Firebase для лічильника сердечок -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <!-- EmailJS — відправка email без сервера -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
   <!-- AUTH OVERLAY -->
@@ -2309,6 +2311,44 @@
     // ==================== ГЛОБАЛЬНІ ЗМІННІ AUTH (мають бути першими) ====================
     let authToken = localStorage.getItem('authToken');
     let currentUser = null;
+
+    // apiFetch — має бути визначено ДО будь-яких викликів
+    async function apiFetch(url, opts = {}) {
+      const headers = {};
+      if (!(opts.body instanceof FormData)) {
+        headers['Content-Type'] = 'application/json';
+      }
+      Object.assign(headers, opts.headers || {});
+      if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
+      const res = await fetch(url, { ...opts, headers });
+      return res;
+    }
+
+    // ==================== EMAILJS ====================
+    // Ініціалізація EmailJS — Public Key з emailjs.com → Account → API Keys
+    const EMAILJS_PUBLIC_KEY  = 'g1cx-85ZMRI6gTEQb';
+    const EMAILJS_SERVICE_ID  = 'service_yxlpgdo';
+    const EMAILJS_TEMPLATE_ID = 'template_7cd5w18';
+
+    if (EMAILJS_PUBLIC_KEY !== 'YOUR_EMAILJS_PUBLIC_KEY') {
+      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+    }
+
+    async function sendEmailViaEmailJS(to, subject, html) {
+      if (EMAILJS_PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY') return false;
+      try {
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          to_email: to,
+          subject:  subject,
+          message:  html.replace(/<[^>]+>/g, ''), // plain text
+          html:     html,
+        });
+        return true;
+      } catch(e) {
+        console.error('EmailJS error:', e);
+        return false;
+      }
+    }
 
     // ==================== ИНИЦИАЛИЗАЦИЯ ====================
     const screens = {};
@@ -3438,19 +3478,7 @@
       adminPanel: '🛡️ Адмін-панель',
     });
 
-    async function apiFetch(url, opts = {}) {
-      const headers = {};
-      // Додаємо Content-Type тільки якщо це не FormData
-      if (!(opts.body instanceof FormData)) {
-        headers['Content-Type'] = 'application/json';
-      }
-      // Додаємо кастомні заголовки
-      Object.assign(headers, opts.headers || {});
-      // Завжди додаємо токен
-      if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
-      const res = await fetch(url, { ...opts, headers });
-      return res;
-    }
+    async     // apiFetch визначено вгорі скрипта
 
     function showAllForms(showId) {
       ['loginForm','registerForm','forgotForm','resetForm'].forEach(id => {
@@ -3532,7 +3560,10 @@
           method: 'POST', body: JSON.stringify({ login })
         });
         const data = await res.json();
-        if (res.ok) showAuthSuccess('Лист надіслано! Перевірте пошту.');
+        if (res.ok) {
+          if (data.emailTo) sendEmailViaEmailJS(data.emailTo, data.emailSubject, data.emailHtml).catch(()=>{});
+          showAuthSuccess('Лист надіслано! Перевірте пошту.');
+        }
         else showAuthError(data.error || 'Помилка');
       } catch { showAuthError('Помилка підключення'); }
     }

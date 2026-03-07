@@ -161,61 +161,15 @@ if (mailer) {
 }
 
 async function sendMail(to, subject, html) {
-  // Варіант 1: Brevo SMTP (колишній Sendinblue) — безкоштовно, без домену, працює на Render
-  // Реєстрація: brevo.com → SMTP & API → SMTP
-  const BREVO_USER = process.env.BREVO_SMTP_USER || '';
-  const BREVO_PASS = process.env.BREVO_SMTP_PASS || '';
+  // Повертає дані — фронт відправляє через EmailJS
+  // Це дозволяє обійти обмеження SMTP на Render
+  console.log(`[EMAIL] Підготовка листа для ${to}`);
+  return { to, subject, html };
+}
 
-  if (BREVO_USER && BREVO_PASS) {
-    try {
-      console.log(`[EMAIL/Brevo] Відправка на ${to}...`);
-      const brevoTransport = nodemailer.createTransport({
-        host: 'smtp-relay.brevo.com',
-        port: 587,
-        secure: false,
-        auth: { user: BREVO_USER, pass: BREVO_PASS },
-      });
-      const info = await brevoTransport.sendMail({
-        from: `"PWA Dashboard" <${BREVO_USER}>`,
-        to, subject, html
-      });
-      console.log('[EMAIL/Brevo] OK:', info.messageId);
-      return;
-    } catch(e) {
-      console.error('[EMAIL/Brevo] Error:', e.message);
-    }
-  }
-
-  // Варіант 2: Resend API
-  if (RESEND_API_KEY) {
-    try {
-      console.log(`[EMAIL/Resend] Відправка на ${to}...`);
-      const r = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: { 'Authorization': 'Bearer ' + RESEND_API_KEY, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from: 'PWA Dashboard <onboarding@resend.dev>', to: [to], subject, html })
-      });
-      const d = await r.json();
-      if (r.ok) { console.log('[EMAIL/Resend] OK:', d.id); return; }
-      console.error('[EMAIL/Resend] Error:', JSON.stringify(d));
-    } catch(e) { console.error('[EMAIL/Resend] Error:', e.message); }
-  }
-
-  // Варіант 3: Gmail SMTP (часто блокується на Render)
-  if (mailer) {
-    console.log(`[EMAIL/Gmail] Відправка на ${to}...`);
-    try {
-      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 15000));
-      const info = await Promise.race([
-        mailer.sendMail({ from: `"PWA Dashboard" <${SMTP_USER}>`, to, subject, html }),
-        timeout
-      ]);
-      console.log('[EMAIL/Gmail] OK:', info.messageId);
-      return;
-    } catch(e) { console.error('[EMAIL/Gmail] Error:', e.message); }
-  }
-
-  console.log(`[EMAIL STUB] To: ${to} — жоден email провайдер не налаштований`);
+// Допоміжна функція — повертає дані листа клієнту для відправки через EmailJS
+function emailPayload(to, subject, html) {
+  return { emailTo: to, emailSubject: subject, emailHtml: html };
 }
 
 // ==================== APP ====================
@@ -305,14 +259,16 @@ app.post('/api/auth/register', async (req, res) => {
     if (!isFirst) {
       const verifyUrl = `${BASE_URL}/api/auth/verify/${verifyToken}`;
       // Відповідаємо одразу — не чекаємо email
-      res.json({ ok: true, message: 'Реєстрація успішна! Перевірте пошту.' });
-      // Відправляємо email у фоні
-      sendMail(email, 'Підтвердіть email — PWA Dashboard', `
-        <div style="font-family:sans-serif;max-width:480px;margin:auto">
-          <h2>Привіт, ${username}!</h2>
-          <p>Підтвердіть вашу email-адресу:</p>
-          <a href="${verifyUrl}" style="display:inline-block;padding:12px 24px;background:#667eea;color:#fff;border-radius:8px;text-decoration:none;font-weight:700">Підтвердити email</a>
-        </div>`).catch(e => console.error('Register email error:', e.message));
+      res.json({
+        ok: true,
+        message: 'Реєстрація успішна! Перевірте пошту.',
+        ...emailPayload(email, 'Підтвердіть email — PWA Dashboard',
+          `<div style="font-family:sans-serif;max-width:480px;margin:auto">
+            <h2>Привіт, ${username}!</h2>
+            <p>Підтвердіть вашу email-адресу:</p>
+            <a href="${verifyUrl}" style="display:inline-block;padding:12px 24px;background:#667eea;color:#fff;border-radius:8px;text-decoration:none;font-weight:700">Підтвердити email</a>
+          </div>`)
+      });
     } else {
       res.json({ ok: true, message: 'Акаунт адміна створено! Можете увійти.' });
     }
@@ -352,12 +308,14 @@ app.post('/api/auth/resend-verification', async (req, res) => {
     const verifyToken = crypto.randomBytes(32).toString('hex');
     await db.collection('users').updateOne({ _id: user._id }, { $set: { verify_token: verifyToken } });
     const verifyUrl = `${BASE_URL}/api/auth/verify/${verifyToken}`;
-    res.json({ ok: true });
-    sendMail(user.email, 'Підтвердіть email — PWA Dashboard', `
-      <div style="font-family:sans-serif;max-width:480px;margin:auto">
-        <h2>Підтвердження email</h2>
-        <a href="${verifyUrl}" style="display:inline-block;padding:12px 24px;background:#667eea;color:#fff;border-radius:8px;text-decoration:none;font-weight:700">Підтвердити email</a>
-      </div>`).catch(e => console.error('Resend email error:', e.message));
+    res.json({
+      ok: true,
+      ...emailPayload(user.email, 'Підтвердіть email — PWA Dashboard',
+        `<div style="font-family:sans-serif;max-width:480px;margin:auto">
+          <h2>Підтвердження email</h2>
+          <a href="${verifyUrl}" style="display:inline-block;padding:12px 24px;background:#667eea;color:#fff;border-radius:8px;text-decoration:none;font-weight:700">Підтвердити email</a>
+        </div>`)
+    });
   } catch (e) { res.status(500).json({ error: 'Помилка сервера' }); }
 });
 
@@ -369,13 +327,15 @@ app.post('/api/auth/forgot', async (req, res) => {
     const token = crypto.randomBytes(32).toString('hex');
     await db.collection('users').updateOne({ _id: user._id }, { $set: { reset_token: token, reset_expiry: Date.now() + 3600000 } });
     const resetUrl = `${BASE_URL}/?reset=${token}`;
-    res.json({ ok: true });
-    sendMail(email, 'Скидання пароля — PWA Dashboard', `
-      <div style="font-family:sans-serif;max-width:480px;margin:auto">
-        <h2>Скидання пароля</h2>
-        <p>Посилання діє 1 годину.</p>
-        <a href="${resetUrl}" style="display:inline-block;padding:12px 24px;background:#f5576c;color:#fff;border-radius:8px;text-decoration:none;font-weight:700">Скинути пароль</a>
-      </div>`).catch(e => console.error('Forgot email error:', e.message));
+    res.json({
+      ok: true,
+      ...emailPayload(email, 'Скидання пароля — PWA Dashboard',
+        `<div style="font-family:sans-serif;max-width:480px;margin:auto">
+          <h2>Скидання пароля</h2>
+          <p>Посилання діє 1 годину.</p>
+          <a href="${resetUrl}" style="display:inline-block;padding:12px 24px;background:#f5576c;color:#fff;border-radius:8px;text-decoration:none;font-weight:700">Скинути пароль</a>
+        </div>`)
+    });
   } catch (e) { res.status(500).json({ error: 'Помилка сервера' }); }
 });
 
