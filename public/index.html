@@ -3782,25 +3782,19 @@
     }
 
     // ==================== ІНІЦІАЛІЗАЦІЯ AUTH ====================
-    // Синхронна перевірка URL — до будь-якого async коду
-(function checkUrlParams() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('reset')) {
-    // Одразу ховаємо всі форми крім reset — синхронно, без затримки
-    document.getElementById('authOverlay').style.display = 'flex';
-    document.getElementById('mainContainer').style.display = 'none';
-    document.querySelectorAll('.auth-form').forEach(f => f.classList.add('hidden'));
-    document.getElementById('resetForm').classList.remove('hidden');
-    document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
-  }
-})();
-
-(async function initAuth() {
+    async function initAuth() {
       const params = new URLSearchParams(window.location.search);
+      console.log('[initAuth] params:', window.location.search);
+      console.log('[initAuth] reset token:', params.get('reset'));
+      console.log('[initAuth] resetForm exists:', !!document.getElementById('resetForm'));
 
       if (params.get('reset')) {
         resetToken = params.get('reset');
-        // Форма вже показана синхронно вище
+        document.getElementById('authOverlay').style.display = 'flex';
+        document.getElementById('mainContainer').style.display = 'none';
+        document.querySelectorAll('.auth-form').forEach(f => f.classList.add('hidden'));
+        document.getElementById('resetForm').classList.remove('hidden');
+        document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
         return;
       }
 
@@ -3828,7 +3822,10 @@
 
       // Показуємо форму входу
       document.getElementById('authOverlay').style.display = 'flex';
-    })();
+    }
+
+    // Запускаємо одразу — скрипт в кінці body, DOM вже готовий
+    initAuth();
 
   </script>
 
