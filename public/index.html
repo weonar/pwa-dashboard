@@ -3765,11 +3765,15 @@
 
       if (params.get('reset')) {
         resetToken = params.get('reset');
+        // Показуємо authOverlay і тільки форму скидання
+        document.getElementById('authOverlay').style.display = 'flex';
+        document.getElementById('mainContainer').style.display = 'none';
         document.getElementById('loginForm').classList.add('hidden');
         document.getElementById('registerForm').classList.add('hidden');
+        document.getElementById('forgotForm').classList.add('hidden');
         document.getElementById('resetForm').classList.remove('hidden');
         document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
-        return;
+        return; // не перевіряємо токен сесії — одразу показуємо форму
       }
 
       if (params.get('qr')) {
