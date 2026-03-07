@@ -3341,6 +3341,8 @@
       document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
       document.getElementById('forgotForm').classList.add('hidden');
       document.getElementById('resetForm').classList.add('hidden');
+      const qrForm = document.getElementById('qrLoginForm');
+      if (qrForm) qrForm.classList.add('hidden');
       clearAuthMessages();
     }
 
@@ -3525,7 +3527,51 @@
     }
 
     function showQrLogin() {
-      showAuthError('Введіть адресу з QR-коду вручну або відскануйте на іншому пристрої 📱');
+      clearAuthMessages();
+      document.getElementById('loginForm').classList.add('hidden');
+      document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+
+      let qrLoginForm = document.getElementById('qrLoginForm');
+      if (!qrLoginForm) {
+        qrLoginForm = document.createElement('form');
+        qrLoginForm.id = 'qrLoginForm';
+        qrLoginForm.className = 'auth-form';
+        qrLoginForm.onsubmit = () => false;
+        qrLoginForm.innerHTML = `
+          <div style="text-align:center;padding:8px 0 4px">
+            <div style="font-size:40px;margin-bottom:8px">📱</div>
+            <p style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:6px">Вхід через QR-код</p>
+            <p style="font-size:12px;color:var(--text-secondary);line-height:1.6">
+              1. Відкрий Dashboard на іншому пристрої де вже залогінений<br>
+              2. Перейди в <b style="color:#667eea">Кабінет → Згенерувати QR-код</b><br>
+              3. Відскануй QR камерою цього телефону — вхід відбудеться автоматично
+            </p>
+          </div>
+          <div style="border-top:1px solid rgba(255,255,255,0.08);margin:8px 0"></div>
+          <p style="font-size:12px;color:var(--text-secondary);text-align:center">Або введіть токен вручну:</p>
+          <div class="auth-field">
+            <label>Токен або повне QR-посилання</label>
+            <input type="text" id="qrManualToken" placeholder="вставте посилання або токен">
+          </div>
+          <button class="auth-btn" onclick="doQrManualLogin()">Увійти</button>
+          <button class="auth-tab" style="flex:none;width:100%;margin-top:6px" onclick="showAuthTab('login')">← Назад</button>
+        `;
+        const loginForm = document.getElementById('loginForm');
+        loginForm.parentNode.insertBefore(qrLoginForm, loginForm.nextSibling);
+      } else {
+        qrLoginForm.classList.remove('hidden');
+      }
+    }
+
+    async function doQrManualLogin() {
+      const raw = (document.getElementById('qrManualToken').value || '').trim();
+      if (!raw) { showAuthError('Введіть токен або посилання'); return; }
+      let token = raw;
+      try {
+        const url = new URL(raw);
+        token = url.searchParams.get('qr') || raw;
+      } catch {}
+      await tryQRLogin(token);
     }
 
     // ==================== КАБІНЕТ ====================
