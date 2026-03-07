@@ -2853,10 +2853,13 @@
     }
 
     async function downloadFile(filename) {
-      const url = `/api/download/${encodeURIComponent(filename)}`;
+      // Передаємо токен через query — браузер не може додати заголовок для <a>
+      const token = authToken || '';
+      const url = `/api/download/${encodeURIComponent(filename)}?token=${token}`;
       const a = document.createElement('a');
       a.href = url;
       a.download = filename;
+      a.target = '_blank';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
