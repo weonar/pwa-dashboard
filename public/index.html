@@ -3812,6 +3812,8 @@
         users.forEach(u => {
           const row = document.createElement('div');
           row.className = 'admin-user-row';
+
+          const isMe = u.id === currentUser.id;
           row.innerHTML = `
             <div class="admin-user-avatar">${u.username[0].toUpperCase()}</div>
             <div class="admin-user-info">
@@ -3820,18 +3822,29 @@
               <div class="email">${u.email}</div>
             </div>
             <div class="admin-user-actions">
-              ${u.id !== currentUser.id ? `
-                <button class="admin-role-btn ${u.role === 'admin' ? 'cabinet-role-badge admin' : 'cabinet-role-badge user'}"
-                  onclick="toggleUserRole(${u._id}, '${u.role}')">
+              ${isMe ? '<span style="font-size:11px;color:var(--text-secondary)">це ви</span>' : `
+                <button class="admin-role-btn ${u.role === 'admin' ? 'cabinet-role-badge admin' : 'cabinet-role-badge user'}" data-uid="${u.id}" data-role="${u.role}">
                   ${u.role === 'admin' ? '→ user' : '→ admin'}
                 </button>
-                <button class="admin-delete-btn" onclick="deleteUser('${u.id}')">✕</button>
-              ` : '<span style="font-size:11px;color:var(--text-secondary)">це ви</span>'}
+                <button class="admin-delete-btn" data-uid="${u.id}">✕</button>
+              `}
             </div>
           `;
+
+          // Вішаємо події через addEventListener — не onclick атрибут
+          if (!isMe) {
+            const roleBtn = row.querySelector('.admin-role-btn');
+            const delBtn  = row.querySelector('.admin-delete-btn');
+            if (roleBtn) roleBtn.addEventListener('click', () => toggleUserRole(u.id, u.role));
+            if (delBtn)  delBtn.addEventListener('click',  () => deleteUser(u.id));
+          }
+
           container.appendChild(row);
         });
-      } catch { container.innerHTML = '<div style="color:#f5576c">Помилка завантаження</div>'; }
+      } catch(e) {
+        console.error('loadAdminUsers error:', e);
+        container.innerHTML = '<div style="color:#f5576c">Помилка завантаження</div>';
+      }
     }
 
     async function toggleUserRole(userId, currentRole) {
