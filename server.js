@@ -161,45 +161,61 @@ if (mailer) {
 }
 
 async function sendMail(to, subject, html) {
-  // Спочатку пробуємо Resend API (HTTP — працює скрізь)
+  // Варіант 1: Brevo SMTP (колишній Sendinblue) — безкоштовно, без домену, працює на Render
+  // Реєстрація: brevo.com → SMTP & API → SMTP
+  const BREVO_USER = process.env.BREVO_SMTP_USER || '';
+  const BREVO_PASS = process.env.BREVO_SMTP_PASS || '';
+
+  if (BREVO_USER && BREVO_PASS) {
+    try {
+      console.log(`[EMAIL/Brevo] Відправка на ${to}...`);
+      const brevoTransport = nodemailer.createTransport({
+        host: 'smtp-relay.brevo.com',
+        port: 587,
+        secure: false,
+        auth: { user: BREVO_USER, pass: BREVO_PASS },
+      });
+      const info = await brevoTransport.sendMail({
+        from: `"PWA Dashboard" <${BREVO_USER}>`,
+        to, subject, html
+      });
+      console.log('[EMAIL/Brevo] OK:', info.messageId);
+      return;
+    } catch(e) {
+      console.error('[EMAIL/Brevo] Error:', e.message);
+    }
+  }
+
+  // Варіант 2: Resend API
   if (RESEND_API_KEY) {
     try {
       console.log(`[EMAIL/Resend] Відправка на ${to}...`);
       const r = await fetch('https://api.resend.com/emails', {
         method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + RESEND_API_KEY,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          from: 'PWA Dashboard <onboarding@resend.dev>',
-          to: [to],
-          subject,
-          html
-        })
+        headers: { 'Authorization': 'Bearer ' + RESEND_API_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: 'PWA Dashboard <onboarding@resend.dev>', to: [to], subject, html })
       });
       const d = await r.json();
       if (r.ok) { console.log('[EMAIL/Resend] OK:', d.id); return; }
-      console.error('[EMAIL/Resend] Error:', d);
-    } catch(e) {
-      console.error('[EMAIL/Resend] fetch error:', e.message);
-    }
+      console.error('[EMAIL/Resend] Error:', JSON.stringify(d));
+    } catch(e) { console.error('[EMAIL/Resend] Error:', e.message); }
   }
 
-  // Fallback: Gmail SMTP
-  if (!mailer) {
-    console.log(`[EMAIL STUB] To: ${to} — ні RESEND_API_KEY ні SMTP_USER не задано`);
-    return;
+  // Варіант 3: Gmail SMTP (часто блокується на Render)
+  if (mailer) {
+    console.log(`[EMAIL/Gmail] Відправка на ${to}...`);
+    try {
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 15000));
+      const info = await Promise.race([
+        mailer.sendMail({ from: `"PWA Dashboard" <${SMTP_USER}>`, to, subject, html }),
+        timeout
+      ]);
+      console.log('[EMAIL/Gmail] OK:', info.messageId);
+      return;
+    } catch(e) { console.error('[EMAIL/Gmail] Error:', e.message); }
   }
-  console.log(`[EMAIL/Gmail] Відправка на ${to}...`);
-  const timeout = new Promise((_, reject) =>
-    setTimeout(() => reject(new Error('Email timeout after 15s')), 15000)
-  );
-  const info = await Promise.race([
-    mailer.sendMail({ from: `"PWA Dashboard" <${SMTP_USER}>`, to, subject, html }),
-    timeout
-  ]);
-  console.log(`[EMAIL/Gmail] OK: ${info.messageId}`);
+
+  console.log(`[EMAIL STUB] To: ${to} — жоден email провайдер не налаштований`);
 }
 
 // ==================== APP ====================
@@ -207,7 +223,19 @@ const app    = express();
 const server = http.createServer(app);
 const wss    = new WebSocket.Server({ server });
 
-app.use(express.static('public'));
+// Статичні файли — але index.html без кешу
+app.get('/', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.sendFile(require('path').join(__dirname, 'public', 'index.html'));
+});
+app.use(express.static('public', {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('index.html')) {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    }
+  }
+}));
 // JSON middleware тільки для не-multipart запитів
 app.use((req, res, next) => {
   const ct = req.headers['content-type'] || '';
@@ -560,6 +588,30 @@ function broadcastToUser(userId, type, data, excludeClientId = null) {
     if (uid === userId && cid !== excludeClientId && ws.readyState === WebSocket.OPEN) ws.send(msg);
   });
 }
+
+// ==================== DEBUG ====================
+// Ендпоінт для перевірки версії і стану сервера
+app.get('/api/debug', (req, res) => {
+  const fs = require('fs');
+  let indexVersion = 'unknown';
+  try {
+    const idx = fs.readFileSync(require('path').join(__dirname, 'public', 'index.html'), 'utf8');
+    const match = idx.match(/PWA v[\d.]+/);
+    indexVersion = match ? match[0] : 'no version marker';
+  } catch(e) { indexVersion = 'error: ' + e.message; }
+  
+  res.json({
+    indexVersion,
+    env: {
+      SMTP_USER: !!process.env.SMTP_USER,
+      MONGODB_URI: !!process.env.MONGODB_URI,
+      CLOUDINARY_URL: !!process.env.CLOUDINARY_URL,
+      BREVO_SMTP_USER: !!process.env.BREVO_SMTP_USER,
+      RESEND_API_KEY: !!process.env.RESEND_API_KEY,
+    },
+    time: new Date().toISOString()
+  });
+});
 
 // ==================== ЗАПУСК ====================
 connectMongo().then(() => {
