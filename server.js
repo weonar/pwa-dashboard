@@ -297,6 +297,32 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+app.post('/api/auth/resend-verification', async (req, res) => {
+  try {
+    const { login } = req.body;
+    const user = db.findUser({ email: login }) || db.findUser({ username: login });
+    if (!user) return res.json({ ok: true }); // не розкриваємо
+    if (user.verified) return res.status(400).json({ error: 'Email вже підтверджений' });
+
+    const verifyToken = require('crypto').randomBytes(32).toString('hex');
+    db.updateUser(user.id, { verify_token: verifyToken });
+
+    const verifyUrl = `${BASE_URL}/api/auth/verify/${verifyToken}`;
+    await sendMail(user.email, '✅ Підтвердіть email — PWA Dashboard', `
+      <div style="font-family:sans-serif;max-width:480px;margin:auto">
+        <h2>Підтвердження email</h2>
+        <p>Натисніть кнопку нижче для активації акаунту:</p>
+        <a href="${verifyUrl}" style="display:inline-block;padding:12px 24px;background:#667eea;color:#fff;border-radius:8px;text-decoration:none;font-weight:700">
+          Підтвердити email
+        </a>
+      </div>
+    `);
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Помилка сервера' });
+  }
+});
+
 app.post('/api/auth/forgot', async (req, res) => {
   try {
     const { email } = req.body;

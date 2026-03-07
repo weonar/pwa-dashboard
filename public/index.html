@@ -3470,12 +3470,35 @@
       try {
         const res  = await apiFetch('/api/auth/login', { method:'POST', body: JSON.stringify({ login, password }) });
         const data = await res.json();
-        if (!res.ok) { showAuthError(data.error); return; }
+        if (!res.ok) {
+          if (res.status === 403 && data.error.includes('email')) {
+            // Показуємо помилку + кнопку повторної відправки
+            const errEl = document.getElementById('authError');
+            errEl.innerHTML = `${data.error} <br><button onclick="resendVerification('${login}')" style="margin-top:8px;padding:7px 14px;background:rgba(102,126,234,0.2);border:1px solid rgba(102,126,234,0.4);color:#667eea;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;width:100%">📧 Надіслати лист повторно</button>`;
+            errEl.style.display = 'block';
+          } else {
+            showAuthError(data.error);
+          }
+          return;
+        }
         localStorage.setItem('authToken', data.token);
         authToken = data.token;
         await afterLogin(data.user);
       } catch { showAuthError('Помилка підключення'); }
       finally { btn.disabled = false; btn.textContent = 'Увійти'; }
+    }
+
+    async function resendVerification(login) {
+      const btn = document.getElementById('authError').querySelector('button');
+      if (btn) { btn.disabled = true; btn.textContent = 'Надсилаємо...'; }
+      try {
+        const res  = await apiFetch('/api/auth/resend-verification', {
+          method: 'POST', body: JSON.stringify({ login })
+        });
+        const data = await res.json();
+        if (res.ok) showAuthSuccess('Лист надіслано! Перевірте пошту.');
+        else showAuthError(data.error || 'Помилка');
+      } catch { showAuthError('Помилка підключення'); }
     }
 
     async function doRegister() {
@@ -3759,21 +3782,26 @@
     }
 
     // ==================== ІНІЦІАЛІЗАЦІЯ AUTH ====================
-    (async function initAuth() {
-      // Перевіряємо URL параметри
+    // Синхронна перевірка URL — до будь-якого async коду
+(function checkUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('reset')) {
+    // Одразу ховаємо всі форми крім reset — синхронно, без затримки
+    document.getElementById('authOverlay').style.display = 'flex';
+    document.getElementById('mainContainer').style.display = 'none';
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.add('hidden'));
+    document.getElementById('resetForm').classList.remove('hidden');
+    document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+  }
+})();
+
+(async function initAuth() {
       const params = new URLSearchParams(window.location.search);
 
       if (params.get('reset')) {
         resetToken = params.get('reset');
-        // Показуємо authOverlay і тільки форму скидання
-        document.getElementById('authOverlay').style.display = 'flex';
-        document.getElementById('mainContainer').style.display = 'none';
-        document.getElementById('loginForm').classList.add('hidden');
-        document.getElementById('registerForm').classList.add('hidden');
-        document.getElementById('forgotForm').classList.add('hidden');
-        document.getElementById('resetForm').classList.remove('hidden');
-        document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
-        return; // не перевіряємо токен сесії — одразу показуємо форму
+        // Форма вже показана синхронно вище
+        return;
       }
 
       if (params.get('qr')) {
