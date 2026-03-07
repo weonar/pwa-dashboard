@@ -1,3 +1,4 @@
+<!-- PWA v3.1 -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -2787,6 +2788,7 @@
         const formData = new FormData();
         formData.append('file', file);
         try {
+          console.log('[UPLOAD] authToken:', authToken ? authToken.substring(0,20)+'...' : 'NULL!');
           const uploadRes = await apiFetch('/api/upload', {
             method: 'POST',
             body: formData

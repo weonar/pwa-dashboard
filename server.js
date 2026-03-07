@@ -25,6 +25,7 @@ const WebSocket   = require('ws');
 const bcrypt      = require('bcryptjs');
 const jwt         = require('jsonwebtoken');
 const nodemailer  = require('nodemailer');
+const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
 const crypto      = require('crypto');
 const QRCode      = require('qrcode');
 const { MongoClient, ObjectId } = require('mongodb');
@@ -160,25 +161,45 @@ if (mailer) {
 }
 
 async function sendMail(to, subject, html) {
+  // Спочатку пробуємо Resend API (HTTP — працює скрізь)
+  if (RESEND_API_KEY) {
+    try {
+      console.log(`[EMAIL/Resend] Відправка на ${to}...`);
+      const r = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + RESEND_API_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: 'PWA Dashboard <onboarding@resend.dev>',
+          to: [to],
+          subject,
+          html
+        })
+      });
+      const d = await r.json();
+      if (r.ok) { console.log('[EMAIL/Resend] OK:', d.id); return; }
+      console.error('[EMAIL/Resend] Error:', d);
+    } catch(e) {
+      console.error('[EMAIL/Resend] fetch error:', e.message);
+    }
+  }
+
+  // Fallback: Gmail SMTP
   if (!mailer) {
-    console.log(`[EMAIL STUB] To: ${to} | Subject: ${subject}`);
-    console.log('[EMAIL STUB] Причина: SMTP_USER не задано в env змінних');
+    console.log(`[EMAIL STUB] To: ${to} — ні RESEND_API_KEY ні SMTP_USER не задано`);
     return;
   }
-  console.log(`[EMAIL] Відправка на ${to}...`);
+  console.log(`[EMAIL/Gmail] Відправка на ${to}...`);
   const timeout = new Promise((_, reject) =>
     setTimeout(() => reject(new Error('Email timeout after 15s')), 15000)
   );
-  try {
-    const info = await Promise.race([
-      mailer.sendMail({ from: `"PWA Dashboard" <${SMTP_USER}>`, to, subject, html }),
-      timeout
-    ]);
-    console.log(`[EMAIL] Успішно відправлено: ${info.messageId}`);
-  } catch(e) {
-    console.error(`[EMAIL] Помилка відправки на ${to}:`, e.message);
-    throw e;
-  }
+  const info = await Promise.race([
+    mailer.sendMail({ from: `"PWA Dashboard" <${SMTP_USER}>`, to, subject, html }),
+    timeout
+  ]);
+  console.log(`[EMAIL/Gmail] OK: ${info.messageId}`);
 }
 
 // ==================== APP ====================
