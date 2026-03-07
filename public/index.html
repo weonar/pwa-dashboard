@@ -3721,8 +3721,15 @@
       status.textContent = 'Запуск камери...';
       status.className = 'qr-scanner-status';
 
+      // Перевіряємо чи є підтримка MediaDevices (потрібен HTTPS)
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        status.textContent = '❌ Камера не підтримується. Потрібен HTTPS або Chrome/Firefox.';
+        status.className = 'qr-scanner-status error';
+        return;
+      }
+
       navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 640 } }
+        video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 }, height: { ideal: 640 } }
       }).then(stream => {
         qrScannerStream = stream;
         const video = document.getElementById('qrVideo');
@@ -3760,8 +3767,23 @@
           }
         }, 200);
       }).catch(err => {
-        status.textContent = '❌ Немає доступу до камери: ' + err.message;
+        console.error('Camera error:', err.name, err.message);
+        if (err.name === 'NotAllowedError') {
+          status.textContent = '❌ Дозвольте доступ до камери в налаштуваннях браузера';
+        } else if (err.name === 'NotFoundError') {
+          status.textContent = '❌ Камера не знайдена на пристрої';
+        } else if (err.name === 'NotReadableError') {
+          status.textContent = '❌ Камера зайнята іншим додатком';
+        } else {
+          status.textContent = '❌ Помилка камери: ' + err.message;
+        }
         status.className = 'qr-scanner-status error';
+        // Показуємо кнопку щоб спробувати ще раз
+        const retryBtn = document.createElement('button');
+        retryBtn.textContent = '🔄 Спробувати ще раз';
+        retryBtn.style.cssText = 'margin-top:12px;padding:8px 16px;border-radius:8px;border:none;background:#667eea;color:#fff;cursor:pointer;font-size:14px';
+        retryBtn.onclick = () => { status.innerHTML = ''; openQrScanner(); };
+        status.appendChild(retryBtn);
       });
     }
 
@@ -3889,16 +3911,32 @@
 
       // Пробуємо відновити сесію
       if (authToken) {
+        // Показуємо лоадер поки чекаємо (Render може спати 30-50 сек)
+        document.getElementById('authOverlay').style.display = 'none';
+        document.getElementById('mainContainer').style.display = 'flex';
         try {
           const res  = await apiFetch('/api/auth/me');
           const data = await res.json();
           if (res.ok) { await afterLogin(data); return; }
-        } catch {}
-        localStorage.removeItem('authToken');
-        authToken = null;
+          // Токен недійсний — показуємо логін
+          localStorage.removeItem('authToken');
+          authToken = null;
+        } catch(e) {
+          // Мережева помилка — не видаляємо токен, пробуємо ще раз через 3 сек
+          console.warn('Session restore failed, retrying...', e.message);
+          await new Promise(r => setTimeout(r, 3000));
+          try {
+            const res2  = await apiFetch('/api/auth/me');
+            const data2 = await res2.json();
+            if (res2.ok) { await afterLogin(data2); return; }
+          } catch {}
+          localStorage.removeItem('authToken');
+          authToken = null;
+        }
       }
 
       // Показуємо форму входу
+      document.getElementById('mainContainer').style.display = 'none';
       document.getElementById('authOverlay').style.display = 'flex';
     }
 
