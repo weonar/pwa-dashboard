@@ -494,6 +494,8 @@ app.get('/api/download/:filename', flexAuthMiddleware, async (req, res) => {
     const filename = decodeURIComponent(req.params.filename);
     const file = await db.collection('files').findOne({ userId: req.user.id, filename });
     if (!file) return res.status(404).json({ error: 'Файл не знайдено' });
+    // Додаємо Content-Disposition щоб браузер скачував а не відкривав
+    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(filename)}"`);
     res.redirect(file.url);
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
