@@ -1907,7 +1907,7 @@
 </head>
 <body>
   <!-- AUTH OVERLAY -->
-  <div id="authOverlay" style="display:none">
+  <div id="authOverlay" style="display:flex">
     <div class="auth-box">
       <div class="auth-logo">
         <span class="logo-icon">⚡</span>
@@ -1981,7 +1981,7 @@
     </div>
   </div>
 
-  <div class="container">
+  <div class="container" id="mainContainer" style="display:none">
     <!-- МОБІЛЬНИЙ TOPBAR -->
     <div class="mobile-topbar">
       <div class="mobile-topbar-title" id="mobileTitle">🌐 Сайт</div>
@@ -3531,7 +3531,8 @@
       localStorage.removeItem('authToken');
       authToken = null;
       currentUser = null;
-      if (ws) ws.close();
+      if (ws) { ws.close(); ws = null; }
+      document.getElementById('mainContainer').style.display = 'none';
       document.getElementById('authOverlay').style.display = 'flex';
       showAuthTab('login');
     }
@@ -3539,6 +3540,7 @@
     async function afterLogin(user) {
       currentUser = user;
       document.getElementById('authOverlay').style.display = 'none';
+      document.getElementById('mainContainer').style.display = 'flex';
 
       // Оновлюємо кабінет
       document.getElementById('cabinetAvatar').textContent = user.username[0].toUpperCase();

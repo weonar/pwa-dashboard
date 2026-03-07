@@ -1,5 +1,8 @@
-// Завантажуємо .env якщо є
-try { require('dotenv').config(); } catch {}
+// Завантажуємо .env — ОБОВ'ЯЗКОВО до читання process.env
+try { require('dotenv').config(); } catch (e) { console.warn('dotenv не знайдено:', e.message); }
+
+// Перевірка що .env завантажився
+console.log('SMTP_USER з .env:', process.env.SMTP_USER ? '✅ ' + process.env.SMTP_USER : '❌ не знайдено');
 
 // ==================== КОНФІГ ====================
 const PORT       = process.env.PORT       || 3000;
