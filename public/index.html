@@ -3423,30 +3423,29 @@
       return res;
     }
 
+    function showAllForms(showId) {
+      ['loginForm','registerForm','forgotForm','resetForm'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.classList.toggle('hidden', id !== showId);
+        el.style.display = '';
+      });
+      const qrForm = document.getElementById('qrLoginForm');
+      if (qrForm) { qrForm.classList.toggle('hidden', showId !== 'qrLoginForm'); qrForm.style.display = ''; }
+      clearAuthMessages();
+    }
+
     function showAuthTab(tab) {
-      // Оновлюємо активний таб
       document.querySelectorAll('.auth-tab').forEach(b => {
         const isLogin = b.textContent.trim() === 'Вхід';
         const isReg   = b.textContent.trim() === 'Реєстрація';
         b.classList.toggle('active', (tab === 'login' && isLogin) || (tab === 'register' && isReg));
       });
-      // Ховаємо всі форми
-      ['loginForm','registerForm','forgotForm','resetForm'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-      });
-      const qrForm = document.getElementById('qrLoginForm');
-      if (qrForm) qrForm.style.display = 'none';
-      // Показуємо потрібну
-      const target = tab === 'login' ? 'loginForm' : 'registerForm';
-      document.getElementById(target).style.display = 'flex';
-      clearAuthMessages();
+      showAllForms(tab === 'login' ? 'loginForm' : 'registerForm');
     }
 
     function showForgotForm() {
-      document.getElementById('loginForm').classList.add('hidden');
-      document.getElementById('forgotForm').classList.remove('hidden');
-      clearAuthMessages();
+      showAllForms('forgotForm');
     }
 
     function clearAuthMessages() {
@@ -3795,8 +3794,7 @@
         resetToken = params.get('reset');
         document.getElementById('authOverlay').style.display = 'flex';
         document.getElementById('mainContainer').style.display = 'none';
-        document.querySelectorAll('.auth-form').forEach(f => f.classList.add('hidden'));
-        document.getElementById('resetForm').classList.remove('hidden');
+        showAllForms('resetForm');
         document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
         return;
       }
