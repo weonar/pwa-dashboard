@@ -1428,9 +1428,470 @@
     ::-webkit-scrollbar-thumb:hover {
       background: rgba(255, 255, 255, 0.15);
     }
+
+    /* ==================== AUTH OVERLAY ==================== */
+    #authOverlay {
+      position: fixed; inset: 0;
+      background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 50%, #16213e 100%);
+      z-index: 9000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .auth-box {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 36px 32px;
+      backdrop-filter: blur(20px);
+    }
+
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .auth-logo .logo-icon {
+      font-size: 48px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .auth-logo h1 {
+      font-size: 24px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 4px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 24px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      background: transparent;
+      border: none;
+      border-radius: 10px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .auth-tab.active {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+    }
+
+    .auth-form { display: flex; flex-direction: column; gap: 14px; }
+    .auth-form.hidden { display: none; }
+
+    .auth-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .auth-field label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .auth-field input {
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 15px;
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .auth-field input:focus {
+      border-color: rgba(102,126,234,0.6);
+    }
+
+    .auth-btn {
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-top: 4px;
+    }
+
+    .auth-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .auth-btn:active { transform: translateY(0); }
+    .auth-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .auth-error {
+      padding: 10px 14px;
+      background: rgba(245,87,108,0.15);
+      border: 1px solid rgba(245,87,108,0.3);
+      border-radius: 8px;
+      color: #f5576c;
+      font-size: 13px;
+      display: none;
+    }
+
+    .auth-success {
+      padding: 10px 14px;
+      background: rgba(46,213,115,0.12);
+      border: 1px solid rgba(46,213,115,0.25);
+      border-radius: 8px;
+      color: #2ed573;
+      font-size: 13px;
+      display: none;
+    }
+
+    .auth-forgot {
+      text-align: right;
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      text-decoration: underline;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .auth-forgot:hover { color: #667eea; }
+
+    /* QR login кнопка */
+    .auth-qr-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+
+    .auth-qr-btn:hover { background: rgba(255,255,255,0.09); color: var(--text-primary); }
+
+    /* ==================== КАБІНЕТ ==================== */
+    #cabinet {
+      padding: 20px 20px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+    }
+
+    .cabinet-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .cabinet-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .cabinet-info h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .cabinet-info .cabinet-email {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .cabinet-role-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .cabinet-role-badge.admin {
+      background: rgba(245,87,108,0.15);
+      color: #f5576c;
+      border: 1px solid rgba(245,87,108,0.3);
+    }
+
+    .cabinet-role-badge.user {
+      background: rgba(102,126,234,0.15);
+      color: #667eea;
+      border: 1px solid rgba(102,126,234,0.3);
+    }
+
+    .cabinet-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .cabinet-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .qr-section {
+      text-align: center;
+    }
+
+    .qr-img-wrap {
+      display: inline-block;
+      padding: 12px;
+      background: #1a1a2e;
+      border-radius: 16px;
+      border: 2px solid rgba(102,126,234,0.3);
+      margin: 12px 0;
+    }
+
+    .qr-img-wrap img { display: block; border-radius: 8px; }
+
+    .qr-timer {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .qr-timer span {
+      color: #4facfe;
+      font-weight: 700;
+    }
+
+    .cabinet-action-btn {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .cabinet-action-btn:hover { background: rgba(255,255,255,0.09); }
+
+    .cabinet-action-btn.danger {
+      color: #f5576c;
+      border-color: rgba(245,87,108,0.2);
+    }
+
+    .cabinet-action-btn.danger:hover {
+      background: rgba(245,87,108,0.1);
+    }
+
+    .pw-change-form {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .pw-change-form.open { display: flex; }
+
+    .pw-change-form input {
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .pw-change-form input:focus { border-color: rgba(102,126,234,0.5); }
+
+    /* ==================== ADMIN PANEL ==================== */
+    #adminPanel {
+      padding: 20px 20px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+    }
+
+    .admin-user-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+    }
+
+    .admin-user-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .admin-user-info { flex: 1; min-width: 0; }
+    .admin-user-info .name { font-size: 14px; font-weight: 600; }
+    .admin-user-info .email { font-size: 12px; color: var(--text-secondary); }
+
+    .admin-user-actions { display: flex; gap: 6px; }
+
+    .admin-role-btn {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid;
+      transition: all 0.2s;
+    }
+
+    .admin-delete-btn {
+      padding: 4px 8px;
+      background: rgba(245,87,108,0.15);
+      border: 1px solid rgba(245,87,108,0.25);
+      color: #f5576c;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .admin-delete-btn:hover { background: rgba(245,87,108,0.3); }
+
   </style>
 </head>
 <body>
+  <!-- AUTH OVERLAY -->
+  <div id="authOverlay" style="display:none">
+    <div class="auth-box">
+      <div class="auth-logo">
+        <span class="logo-icon">⚡</span>
+        <h1>PWA Dashboard</h1>
+      </div>
+
+      <!-- Вкладки -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="showAuthTab('login')">Вхід</button>
+        <button class="auth-tab" onclick="showAuthTab('register')">Реєстрація</button>
+      </div>
+
+      <!-- Повідомлення -->
+      <div id="authError"  class="auth-error"></div>
+      <div id="authSuccess" class="auth-success"></div>
+
+      <!-- Форма входу -->
+      <form class="auth-form" id="loginForm" onsubmit="return false">
+        <div class="auth-field">
+          <label>Email або нікнейм</label>
+          <input type="text" id="loginLogin" placeholder="user@email.com" autocomplete="username">
+        </div>
+        <div class="auth-field">
+          <label>Пароль</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <div style="display:flex;justify-content:flex-end">
+          <button class="auth-forgot" onclick="showForgotForm()">Забули пароль?</button>
+        </div>
+        <button class="auth-btn" onclick="doLogin()">Увійти</button>
+        <button class="auth-qr-btn" onclick="showQrLogin()">📷 Увійти через QR-код</button>
+      </form>
+
+      <!-- Форма реєстрації -->
+      <form class="auth-form hidden" id="registerForm" onsubmit="return false">
+        <div class="auth-field">
+          <label>Нікнейм</label>
+          <input type="text" id="regUsername" placeholder="myname" autocomplete="username">
+        </div>
+        <div class="auth-field">
+          <label>Email</label>
+          <input type="email" id="regEmail" placeholder="user@email.com" autocomplete="email">
+        </div>
+        <div class="auth-field">
+          <label>Пароль</label>
+          <input type="password" id="regPassword" placeholder="мінімум 6 символів" autocomplete="new-password">
+        </div>
+        <button class="auth-btn" onclick="doRegister()">Зареєструватися</button>
+      </form>
+
+      <!-- Форма скидання пароля -->
+      <form class="auth-form hidden" id="forgotForm" onsubmit="return false">
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:4px">Введіть ваш email — ми надішлемо посилання для скидання пароля</p>
+        <div class="auth-field">
+          <label>Email</label>
+          <input type="email" id="forgotEmail" placeholder="user@email.com">
+        </div>
+        <button class="auth-btn" onclick="doForgot()">Надіслати лист</button>
+        <button class="auth-tab" style="flex:none;width:100%;margin-top:4px" onclick="showAuthTab('login')">← Назад</button>
+      </form>
+
+      <!-- Форма нового пароля (через ?reset=token) -->
+      <form class="auth-form hidden" id="resetForm" onsubmit="return false">
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:4px">Введіть новий пароль</p>
+        <div class="auth-field">
+          <label>Новий пароль</label>
+          <input type="password" id="resetPassword" placeholder="мінімум 6 символів">
+        </div>
+        <button class="auth-btn" onclick="doReset()">Зберегти пароль</button>
+      </form>
+    </div>
+  </div>
+
   <div class="container">
     <!-- МОБІЛЬНИЙ TOPBAR -->
     <div class="mobile-topbar">
@@ -1451,6 +1912,8 @@
       <button class="nav-btn" data-screen="clipboard">📋 Буфер</button>
       <button class="nav-btn" data-screen="notes">📝 Нотатки</button>
       <button class="nav-btn" data-screen="files">📁 Файли</button>
+      <button class="nav-btn" data-screen="cabinet">👤 Кабінет</button>
+      <button class="nav-btn nav-admin-btn" data-screen="adminPanel" style="display:none">🛡️ Адмін</button>
       <button class="nav-btn nav-settings-btn" id="openSettingsBtn" title="Налаштування">⚙️</button>
     </nav>
 
@@ -1593,6 +2056,54 @@
           <div class="empty-message">Файлів немає, завантажте перший файл</div>
         </div>
       </div>
+
+      <!-- КАБІНЕТ -->
+      <div id="cabinet" class="screen">
+        <div class="cabinet-header">
+          <div class="cabinet-avatar" id="cabinetAvatar">?</div>
+          <div class="cabinet-info">
+            <h2 id="cabinetUsername">—</h2>
+            <div class="cabinet-email" id="cabinetEmail">—</div>
+            <span class="cabinet-role-badge user" id="cabinetRoleBadge">user</span>
+          </div>
+        </div>
+
+        <!-- QR-КОД -->
+        <div class="cabinet-card qr-section">
+          <div class="cabinet-section-title">📱 Підключити телефон</div>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:8px">QR-код для входу на іншому пристрої. Діє 5 хвилин.</p>
+          <div id="qrContainer">
+            <button class="auth-btn" onclick="generateQR()" style="width:auto;padding:10px 24px">Згенерувати QR-код</button>
+          </div>
+        </div>
+
+        <!-- ЗМІНА ПАРОЛЯ -->
+        <div class="cabinet-card">
+          <div class="cabinet-section-title">🔑 Безпека</div>
+          <button class="cabinet-action-btn" onclick="togglePwForm()">🔑 Змінити пароль</button>
+          <div class="pw-change-form" id="pwChangeForm">
+            <input type="password" id="oldPw" placeholder="Поточний пароль">
+            <input type="password" id="newPw" placeholder="Новий пароль (мін. 6)">
+            <input type="password" id="newPw2" placeholder="Повторіть новий пароль">
+            <button class="auth-btn" onclick="doChangePassword()" style="padding:11px">Зберегти</button>
+          </div>
+        </div>
+
+        <!-- ВИХІД -->
+        <div class="cabinet-card">
+          <div class="cabinet-section-title">⚙️ Акаунт</div>
+          <button class="cabinet-action-btn danger" onclick="doLogout()">🚪 Вийти з акаунту</button>
+        </div>
+      </div>
+
+      <!-- ADMIN PANEL -->
+      <div id="adminPanel" class="screen">
+        <h2 style="font-size:24px;font-weight:700;margin-bottom:4px;background:linear-gradient(135deg,#f5576c,#f093fb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">🛡️ Адмін-панель</h2>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Управління користувачами</p>
+        <div id="adminUsersList">
+          <div style="color:var(--text-secondary);font-size:13px">Завантаження...</div>
+        </div>
+      </div>
     </div>
 
     <!-- ІНДИКАТОР ПІДКЛЮЧЕННЯ -->
@@ -1613,6 +2124,8 @@
       <button class="drawer-nav-btn" data-screen="clipboard">📋 Буфер</button>
       <button class="drawer-nav-btn" data-screen="notes">📝 Нотатки</button>
       <button class="drawer-nav-btn" data-screen="files">📁 Файли</button>
+      <button class="drawer-nav-btn" data-screen="cabinet">👤 Кабінет</button>
+      <button class="drawer-nav-btn nav-admin-btn" data-screen="adminPanel" style="display:none">🛡️ Адмін</button>
     </div>
   </div>
   <div class="toast-container" id="toastContainer"></div>
@@ -1736,6 +2249,10 @@
         console.log('✅ WebSocket підключено');
         wsReconnectAttempts = 0;
         updateConnectionStatus(true);
+        // Авторизуємо WS-з'єднання
+        if (authToken) {
+          ws.send(JSON.stringify({ type: 'auth', token: authToken }));
+        }
       };
 
       ws.onmessage = (event) => {
@@ -2055,7 +2572,7 @@
 
     async function loadFiles() {
       try {
-        const response = await fetch('/api/files');
+        const response = await apiFetch('/api/files');
         const files = await response.json();
         const filesList = document.querySelector('.files-list');
 
@@ -2074,8 +2591,9 @@
           const ext = file.name.split('.').pop().toLowerCase();
           const isImage = IMAGE_EXTS.includes(ext);
 
+          const imgToken = encodeURIComponent(authToken || '');
           const previewHtml = isImage
-            ? `<img class="file-preview" src="/api/download/${encodeURIComponent(file.name)}" loading="lazy" onerror="this.style.display='none'">`
+            ? `<img class="file-preview" src="/api/download/${encodeURIComponent(file.name)}?token=${imgToken}" loading="lazy" onerror="this.style.display='none'">`
             : `<div class="file-icon">${getFileIcon(file.name)}</div>`;
 
           item.innerHTML = `
@@ -2102,7 +2620,7 @@
     // Загружаем статистику файлов для на панелі
     async function loadFileStatistics() {
       try {
-        const response = await fetch('/api/statistics');
+        const response = await apiFetch('/api/statistics');
         const stats = await response.json();
 
         if (stats.files && stats.files.count > 0) {
@@ -2220,7 +2738,7 @@
 
     async function deleteFile(filename) {
       try {
-        const response = await fetch(`/api/files/${encodeURIComponent(filename)}`, {
+        const response = await apiFetch(`/api/files/${encodeURIComponent(filename)}`, {
           method: 'DELETE'
         });
 
@@ -2252,6 +2770,8 @@
       clipboard:  '📋 Буфер обміну',
       notes:      '📝 Нотатки',
       files:      '📁 Файли',
+      cabinet:    '👤 Кабінет',
+      adminPanel: '🛡️ Адмін-панель',
     };
 
     function openDrawer() {
@@ -2313,6 +2833,7 @@
       currentScreen = screenId;
 
       if (screenId === 'files') loadFiles();
+      if (screenId === 'adminPanel') loadAdminUsers();
     }
 
 
@@ -2790,6 +3311,334 @@
     // Initial load
     loadFileStatistics();
     logActivity('Додаток запущено');
+
+
+    // ==================== AUTH ====================
+    let currentUser = null;
+    let authToken   = localStorage.getItem('authToken');
+
+    const SCREEN_TITLES_EXTRA = {
+      cabinet:    '👤 Кабінет',
+      adminPanel: '🛡️ Адмін-панель',
+    };
+    Object.assign(typeof SCREEN_TITLES !== 'undefined' ? SCREEN_TITLES : {}, {
+      cabinet: '👤 Кабінет',
+      adminPanel: '🛡️ Адмін-панель',
+    });
+
+    async function apiFetch(url, opts = {}) {
+      const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+      if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
+      const res = await fetch(url, { ...opts, headers });
+      return res;
+    }
+
+    function showAuthTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach((b, i) => {
+        b.classList.toggle('active', ['login','register'][i] === tab || b.textContent.includes(tab === 'login' ? 'Вхід' : 'Реєст'));
+      });
+      document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+      document.getElementById('registerForm').classList.toggle('hidden', tab !== 'register');
+      document.getElementById('forgotForm').classList.add('hidden');
+      document.getElementById('resetForm').classList.add('hidden');
+      clearAuthMessages();
+    }
+
+    function showForgotForm() {
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('forgotForm').classList.remove('hidden');
+      clearAuthMessages();
+    }
+
+    function clearAuthMessages() {
+      const e = document.getElementById('authError');
+      const s = document.getElementById('authSuccess');
+      if (e) { e.style.display = 'none'; e.textContent = ''; }
+      if (s) { s.style.display = 'none'; s.textContent = ''; }
+    }
+
+    function showAuthError(msg) {
+      const el = document.getElementById('authError');
+      el.textContent = msg; el.style.display = 'block';
+      document.getElementById('authSuccess').style.display = 'none';
+    }
+
+    function showAuthSuccess(msg) {
+      const el = document.getElementById('authSuccess');
+      el.textContent = msg; el.style.display = 'block';
+      document.getElementById('authError').style.display = 'none';
+    }
+
+    async function doLogin() {
+      clearAuthMessages();
+      const login    = document.getElementById('loginLogin').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      if (!login || !password) return showAuthError('Заповніть всі поля');
+      const btn = document.querySelector('#loginForm .auth-btn');
+      btn.disabled = true; btn.textContent = 'Вхід...';
+      try {
+        const res  = await apiFetch('/api/auth/login', { method:'POST', body: JSON.stringify({ login, password }) });
+        const data = await res.json();
+        if (!res.ok) { showAuthError(data.error); return; }
+        localStorage.setItem('authToken', data.token);
+        authToken = data.token;
+        await afterLogin(data.user);
+      } catch { showAuthError('Помилка підключення'); }
+      finally { btn.disabled = false; btn.textContent = 'Увійти'; }
+    }
+
+    async function doRegister() {
+      clearAuthMessages();
+      const username = document.getElementById('regUsername').value.trim();
+      const email    = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+      if (!username || !email || !password) return showAuthError('Заповніть всі поля');
+      const btn = document.querySelector('#registerForm .auth-btn');
+      btn.disabled = true; btn.textContent = 'Реєстрація...';
+      try {
+        const res  = await apiFetch('/api/auth/register', { method:'POST', body: JSON.stringify({ username, email, password }) });
+        const data = await res.json();
+        if (!res.ok) { showAuthError(data.error); return; }
+        showAuthSuccess(data.message);
+        showAuthTab('login');
+      } catch { showAuthError('Помилка підключення'); }
+      finally { btn.disabled = false; btn.textContent = 'Зареєструватися'; }
+    }
+
+    async function doForgot() {
+      clearAuthMessages();
+      const email = document.getElementById('forgotEmail').value.trim();
+      if (!email) return showAuthError('Введіть email');
+      const btn = document.querySelector('#forgotForm .auth-btn');
+      btn.disabled = true; btn.textContent = 'Надсилаємо...';
+      try {
+        await apiFetch('/api/auth/forgot', { method:'POST', body: JSON.stringify({ email }) });
+        showAuthSuccess('Якщо email існує — лист надіслано. Перевірте пошту.');
+      } catch { showAuthError('Помилка підключення'); }
+      finally { btn.disabled = false; btn.textContent = 'Надіслати лист'; }
+    }
+
+    let resetToken = null;
+    async function doReset() {
+      clearAuthMessages();
+      const password = document.getElementById('resetPassword').value;
+      if (!password || password.length < 6) return showAuthError('Пароль мінімум 6 символів');
+      const btn = document.querySelector('#resetForm .auth-btn');
+      btn.disabled = true; btn.textContent = 'Збереження...';
+      try {
+        const res  = await apiFetch('/api/auth/reset', { method:'POST', body: JSON.stringify({ token: resetToken, password }) });
+        const data = await res.json();
+        if (!res.ok) { showAuthError(data.error); return; }
+        showAuthSuccess('Пароль змінено! Тепер можете увійти.');
+        showAuthTab('login');
+        window.history.replaceState({}, '', '/');
+      } catch { showAuthError('Помилка'); }
+      finally { btn.disabled = false; btn.textContent = 'Зберегти пароль'; }
+    }
+
+    function doLogout() {
+      localStorage.removeItem('authToken');
+      authToken = null;
+      currentUser = null;
+      if (ws) ws.close();
+      document.getElementById('authOverlay').style.display = 'flex';
+      showAuthTab('login');
+    }
+
+    async function afterLogin(user) {
+      currentUser = user;
+      document.getElementById('authOverlay').style.display = 'none';
+
+      // Оновлюємо кабінет
+      document.getElementById('cabinetAvatar').textContent = user.username[0].toUpperCase();
+      document.getElementById('cabinetUsername').textContent = user.username;
+      document.getElementById('cabinetEmail').textContent = user.email;
+      const badge = document.getElementById('cabinetRoleBadge');
+      badge.textContent = user.role;
+      badge.className = 'cabinet-role-badge ' + user.role;
+
+      // Адмін-кнопки
+      const adminBtns = document.querySelectorAll('.nav-admin-btn');
+      adminBtns.forEach(b => b.style.display = user.role === 'admin' ? '' : 'none');
+
+      // Вкладка Сайт тільки для адміна
+      document.querySelectorAll('[data-screen="website"]').forEach(b => {
+        b.style.display = user.role === 'admin' ? '' : 'none';
+      });
+
+      // Підключаємо WebSocket з токеном
+      connectWebSocket();
+
+      // Якщо не адмін — перемикаємо на нотатки замість сайту
+      if (user.role !== 'admin' && currentScreen === 'website') {
+        switchScreen('notes');
+      }
+    }
+
+    // ==================== QR ====================
+    let qrTimerInterval = null;
+
+    async function generateQR() {
+      const container = document.getElementById('qrContainer');
+      container.innerHTML = '<div style="color:var(--text-secondary);font-size:13px">Генерація...</div>';
+      try {
+        const res  = await apiFetch('/api/qr/generate', { method: 'POST' });
+        const data = await res.json();
+        if (!res.ok) { container.innerHTML = '<div style="color:#f5576c">Помилка</div>'; return; }
+
+        let secondsLeft = data.expiresIn;
+        container.innerHTML = `
+          <div class="qr-img-wrap"><img src="${data.qrDataUrl}" width="200" height="200"></div>
+          <div class="qr-timer">Дійсний: <span id="qrTimerText">${secondsLeft}с</span></div>
+          <p style="font-size:11px;color:var(--text-tertiary);margin-top:6px">Відскануйте камерою телефону</p>
+        `;
+
+        clearInterval(qrTimerInterval);
+        qrTimerInterval = setInterval(() => {
+          secondsLeft--;
+          const el = document.getElementById('qrTimerText');
+          if (el) el.textContent = secondsLeft + 'с';
+          if (secondsLeft <= 0) {
+            clearInterval(qrTimerInterval);
+            container.innerHTML = '<button class="auth-btn" onclick="generateQR()" style="width:auto;padding:10px 24px">Оновити QR-код</button>';
+          }
+        }, 1000);
+      } catch {
+        container.innerHTML = '<div style="color:#f5576c">Помилка генерації</div>';
+      }
+    }
+
+    // Вхід через QR посилання
+    async function tryQRLogin(token) {
+      try {
+        const res  = await fetch('/api/qr/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+        const data = await res.json();
+        if (!res.ok) { showAuthError('QR-код недійсний або застарів'); return; }
+        localStorage.setItem('authToken', data.token);
+        authToken = data.token;
+        await afterLogin(data.user);
+      } catch { showAuthError('Помилка QR-входу'); }
+    }
+
+    function showQrLogin() {
+      showAuthError('Введіть адресу з QR-коду вручну або відскануйте на іншому пристрої 📱');
+    }
+
+    // ==================== КАБІНЕТ ====================
+    function togglePwForm() {
+      document.getElementById('pwChangeForm').classList.toggle('open');
+    }
+
+    async function doChangePassword() {
+      const oldPw = document.getElementById('oldPw').value;
+      const newPw = document.getElementById('newPw').value;
+      const newPw2 = document.getElementById('newPw2').value;
+      if (newPw !== newPw2) { showNotification('Паролі не співпадають', 'error'); return; }
+      if (newPw.length < 6) { showNotification('Пароль мінімум 6 символів', 'error'); return; }
+      try {
+        const res = await apiFetch('/api/auth/change-password', {
+          method: 'POST', body: JSON.stringify({ oldPassword: oldPw, newPassword: newPw })
+        });
+        const data = await res.json();
+        if (!res.ok) { showNotification(data.error, 'error'); return; }
+        showNotification('Пароль змінено!', 'success');
+        document.getElementById('pwChangeForm').classList.remove('open');
+        document.getElementById('oldPw').value = '';
+        document.getElementById('newPw').value = '';
+        document.getElementById('newPw2').value = '';
+      } catch { showNotification('Помилка', 'error'); }
+    }
+
+    // ==================== АДМІН ====================
+    async function loadAdminUsers() {
+      const container = document.getElementById('adminUsersList');
+      try {
+        const res   = await apiFetch('/api/admin/users');
+        const users = await res.json();
+        if (!res.ok) { container.innerHTML = '<div style="color:#f5576c">Помилка</div>'; return; }
+
+        container.innerHTML = '';
+        users.forEach(u => {
+          const row = document.createElement('div');
+          row.className = 'admin-user-row';
+          row.innerHTML = `
+            <div class="admin-user-avatar">${u.username[0].toUpperCase()}</div>
+            <div class="admin-user-info">
+              <div class="name">${u.username} <span class="cabinet-role-badge ${u.role}">${u.role}</span>
+                ${u.verified ? '' : ' <span style="font-size:10px;color:#f5a623">⚠ не підтверджений</span>'}</div>
+              <div class="email">${u.email}</div>
+            </div>
+            <div class="admin-user-actions">
+              ${u.id !== currentUser.id ? `
+                <button class="admin-role-btn ${u.role === 'admin' ? 'cabinet-role-badge admin' : 'cabinet-role-badge user'}"
+                  onclick="toggleUserRole(${u.id}, '${u.role}')">
+                  ${u.role === 'admin' ? '→ user' : '→ admin'}
+                </button>
+                <button class="admin-delete-btn" onclick="deleteUser(${u.id})">✕</button>
+              ` : '<span style="font-size:11px;color:var(--text-secondary)">це ви</span>'}
+            </div>
+          `;
+          container.appendChild(row);
+        });
+      } catch { container.innerHTML = '<div style="color:#f5576c">Помилка завантаження</div>'; }
+    }
+
+    async function toggleUserRole(userId, currentRole) {
+      const newRole = currentRole === 'admin' ? 'user' : 'admin';
+      await apiFetch(`/api/admin/users/${userId}/role`, { method:'PATCH', body: JSON.stringify({ role: newRole }) });
+      loadAdminUsers();
+    }
+
+    async function deleteUser(userId) {
+      if (!confirm('Видалити користувача? Всі його дані будуть втрачені.')) return;
+      await apiFetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+      loadAdminUsers();
+    }
+
+    // ==================== ІНІЦІАЛІЗАЦІЯ AUTH ====================
+    (async function initAuth() {
+      // Перевіряємо URL параметри
+      const params = new URLSearchParams(window.location.search);
+
+      if (params.get('reset')) {
+        resetToken = params.get('reset');
+        document.getElementById('loginForm').classList.add('hidden');
+        document.getElementById('registerForm').classList.add('hidden');
+        document.getElementById('resetForm').classList.remove('hidden');
+        document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+        return;
+      }
+
+      if (params.get('qr')) {
+        tryQRLogin(params.get('qr'));
+        window.history.replaceState({}, '', '/');
+        return;
+      }
+
+      if (params.get('verified')) {
+        showAuthSuccess('Email підтверджено! Тепер можете увійти.');
+        window.history.replaceState({}, '', '/');
+      }
+
+      // Пробуємо відновити сесію
+      if (authToken) {
+        try {
+          const res  = await apiFetch('/api/auth/me');
+          const data = await res.json();
+          if (res.ok) { await afterLogin(data); return; }
+        } catch {}
+        localStorage.removeItem('authToken');
+        authToken = null;
+      }
+
+      // Показуємо форму входу
+      document.getElementById('authOverlay').style.display = 'flex';
+    })();
+
   </script>
 </body>
 </html>
