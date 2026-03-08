@@ -2144,11 +2144,7 @@
             <div class="stat-value" id="stat-clipboard">0</div>
             <div class="stat-detail" id="stat-clipboard-chars">символів</div>
           </div>
-          <div class="stat-card" style="border-color:rgba(255,102,153,0.3);background:rgba(255,102,153,0.06)">
-            <div class="stat-label">❤️ Сердечок</div>
-            <div class="stat-value" id="stat-hearts" style="color:#ff6699">—</div>
-            <div class="stat-detail" id="stat-hearts-time">Останнє: —</div>
-          </div>
+
         </div>
 
         <!-- Синхронізація та активність -->
@@ -3789,7 +3785,7 @@ ${link}`
       const adminBtns = document.querySelectorAll('.nav-admin-btn');
       adminBtns.forEach(b => b.style.display = user.role === 'admin' ? '' : 'none');
 
-      // Вкладка Сайт тільки для адміна
+      // Вкладка Сайт тільки для адміна (кнопка в навігації)
       document.querySelectorAll('[data-screen="website"]').forEach(b => {
         b.style.display = user.role === 'admin' ? '' : 'none';
       });
@@ -3801,6 +3797,10 @@ ${link}`
       if (user.role !== 'admin' && currentScreen === 'website') {
         switchScreen('notes');
       }
+
+      // Показуємо картку сердечок для ВСІХ користувачів в кабінеті
+      const heartsCard = document.getElementById('stat-hearts')?.closest('.stat-card');
+      if (heartsCard) heartsCard.style.display = '';
     }
 
     // ==================== QR ====================
@@ -4105,16 +4105,19 @@ ${link}`
           const el = document.getElementById('stat-hearts');
           const elTime = document.getElementById('stat-hearts-time');
           if (!el) return;
-          if (data && data.count) {
-            el.textContent = data.count;
-            if (data.time) {
-              const t = new Date(data.time).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
-              elTime.textContent = 'Останнє: ' + t;
-            }
-          } else {
-            el.textContent = '0';
-            elTime.textContent = 'Ще не було';
-          }
+          const count = data?.count || 0;
+          const timeStr = data?.time
+            ? 'Останнє: ' + new Date(data.time).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' })
+            : 'Ще не було';
+
+          if (el) { el.textContent = count; }
+          if (elTime) { elTime.textContent = timeStr; }
+
+          // Оновлюємо також картку в Кабінеті (для всіх юзерів)
+          const el2 = document.getElementById('cabinet-stat-hearts');
+          const el2Time = document.getElementById('cabinet-stat-hearts-time');
+          if (el2) el2.textContent = count;
+          if (el2Time) el2Time.textContent = timeStr;
         });
       } catch(e) {
         console.warn('Firebase hearts error:', e.message);
