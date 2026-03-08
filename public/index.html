@@ -2597,11 +2597,14 @@ ${link}`
       if (newNotesData.content !== undefined) notesData.content = newNotesData.content;
       if (newNotesData.tasks   !== undefined) notesData.tasks   = newNotesData.tasks;
 
-      // Оновлюємо UI поточного активного режиму
+      // Завжди оновлюємо обидва UI — текст і завдання
+      const textarea = document.querySelector('#notes textarea');
+      if (textarea) textarea.value = notesData.content || '';
+      renderTasks(notesData.tasks || []);
+
+      // Показуємо активний режим
       if (notesData.mode === 'text') {
         document.querySelector('#notes textarea').value = notesData.content;
-      } else if (notesData.mode === 'tasks') {
-        renderTasks(notesData.tasks);
       }
     }
 
