@@ -2298,6 +2298,7 @@
       <button class="drawer-nav-btn" data-screen="files">📁 Файли</button>
       <button class="drawer-nav-btn" data-screen="cabinet">👤 Кабінет</button>
       <button class="drawer-nav-btn nav-admin-btn" data-screen="adminPanel" style="display:none">🛡️ Адмін</button>
+      <button class="drawer-nav-btn" id="openInfoBtnMobile">ℹ️ Про додаток</button>
     </div>
   </div>
   <div class="toast-container" id="toastContainer"></div>
@@ -3158,6 +3159,12 @@ ${link}`
     });
 
     document.getElementById('openInfoBtn').addEventListener('click', () => {
+      document.getElementById('infoOverlay').style.display = 'flex';
+    });
+    document.getElementById('openInfoBtnMobile').addEventListener('click', () => {
+      // Закриваємо drawer і відкриваємо інфо
+      document.querySelector('.mobile-drawer').classList.remove('open');
+      document.querySelector('.mobile-drawer-overlay').classList.remove('open');
       document.getElementById('infoOverlay').style.display = 'flex';
     });
     document.getElementById('infoOverlay').addEventListener('click', (e) => {
