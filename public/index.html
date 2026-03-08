@@ -453,6 +453,29 @@
       min-width: 0;
     }
 
+    .task-item.dragging {
+      opacity: 0.4;
+      transform: scale(0.98);
+    }
+
+    .task-item.drag-over {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .drag-handle {
+      cursor: grab;
+      color: var(--text-secondary);
+      font-size: 14px;
+      padding: 0 2px;
+      flex-shrink: 0;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .drag-handle:active { cursor: grabbing; }
+
     .task-item:hover {
       background: rgba(255, 255, 255, 0.06);
       border-color: rgba(255, 255, 255, 0.12);
@@ -1905,6 +1928,57 @@
     .qr-scanner-status.error   { color: #f5576c; }
   </style>
   <!-- Firebase для лічильника сердечок -->
+  <!-- INFO MODAL -->
+  <div id="infoOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);z-index:1000;align-items:center;justify-content:center">
+    <div id="infoDialog" style="background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(102,126,234,0.3);border-radius:20px;padding:32px;max-width:520px;width:90%;max-height:85vh;overflow-y:auto;position:relative;box-shadow:0 24px 64px rgba(0,0,0,0.5)">
+      <button onclick="document.getElementById('infoOverlay').style.display='none'" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.1);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">✕</button>
+
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="font-size:3rem;margin-bottom:8px">🗂️</div>
+        <h2 style="color:#fff;font-size:1.5rem;margin:0">PWA Dashboard</h2>
+        <p style="color:#667eea;margin:4px 0 0;font-size:0.9rem">Особистий хмарний простір</p>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <div style="background:rgba(102,126,234,0.1);border:1px solid rgba(102,126,234,0.2);border-radius:12px;padding:16px">
+          <div style="color:#667eea;font-weight:700;margin-bottom:8px">📁 Файлосховище</div>
+          <div style="color:#a0a0b0;font-size:0.88rem;line-height:1.6">Завантажуй і зберігай файли будь-якого типу — фото, відео, документи. Файли зберігаються в хмарі (Cloudinary) і доступні з будь-якого пристрою.</div>
+        </div>
+
+        <div style="background:rgba(240,147,251,0.1);border:1px solid rgba(240,147,251,0.2);border-radius:12px;padding:16px">
+          <div style="color:#f093fb;font-weight:700;margin-bottom:8px">📋 Буфер обміну</div>
+          <div style="color:#a0a0b0;font-size:0.88rem;line-height:1.6">Синхронізований буфер між пристроями через WebSocket. Скопіюй текст на ПК — одразу бачиш на телефоні і навпаки.</div>
+        </div>
+
+        <div style="background:rgba(79,172,254,0.1);border:1px solid rgba(79,172,254,0.2);border-radius:12px;padding:16px">
+          <div style="color:#4facfe;font-weight:700;margin-bottom:8px">✅ Завдання</div>
+          <div style="color:#a0a0b0;font-size:0.88rem;line-height:1.6">Список завдань зі статусами (Todo / In Progress / Done). Редагуй текст, змінюй статус, переставляй місцями — все синхронізується між пристроями.</div>
+        </div>
+
+        <div style="background:rgba(0,242,254,0.1);border:1px solid rgba(0,242,254,0.2);border-radius:12px;padding:16px">
+          <div style="color:#00f2fe;font-weight:700;margin-bottom:8px">📝 Нотатки</div>
+          <div style="color:#a0a0b0;font-size:0.88rem;line-height:1.6">Текстовий редактор для нотаток. Зберігається автоматично і синхронізується між усіма відкритими вкладками.</div>
+        </div>
+
+        <div style="background:rgba(102,126,234,0.08);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px">
+          <div style="color:#e0e0e0;font-weight:700;margin-bottom:8px">📱 Встановлення як додаток</div>
+          <div style="color:#a0a0b0;font-size:0.88rem;line-height:1.6">Це PWA (Progressive Web App) — можна встановити на телефон або ПК як звичайний додаток. На мобільному: «Додати на головний екран» у меню браузера.</div>
+        </div>
+
+        <div style="background:rgba(102,126,234,0.08);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px">
+          <div style="color:#e0e0e0;font-weight:700;margin-bottom:8px">🔐 QR-вхід</div>
+          <div style="color:#a0a0b0;font-size:0.88rem;line-height:1.6">Відкрий Кабінет на ПК → згенеруй QR-код → відскануй телефоном для миттєвого входу без пароля.</div>
+        </div>
+
+      </div>
+
+      <div style="text-align:center;margin-top:20px;color:#555;font-size:0.8rem">
+        Версія 3.1 · MongoDB Atlas + Cloudinary · Render.com
+      </div>
+    </div>
+  </div>
+
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <!-- EmailJS — відправка email без сервера -->
@@ -2009,6 +2083,7 @@
       <button class="nav-btn" data-screen="cabinet">👤 Кабінет</button>
       <button class="nav-btn nav-admin-btn" data-screen="adminPanel" style="display:none">🛡️ Адмін</button>
       <button class="nav-btn nav-settings-btn" id="openSettingsBtn" title="Налаштування">⚙️</button>
+      <button class="nav-btn nav-info-btn" id="openInfoBtn" title="Про додаток">ℹ️</button>
     </nav>
 
 
@@ -2605,36 +2680,69 @@ ${link}`
         const meta = statusMeta(task.status);
         const item = document.createElement('div');
         item.className = `task-item ${meta.cls}`;
-
-        // Будуємо опції дропдауну
-        const optionsHtml = TASK_STATUSES.map(s => `
-          <button class="status-option ${s.cls} ${s.key === task.status ? 'active' : ''}" data-status="${s.key}">
-            <span class="dot"></span>${s.label}
-          </button>
-        `).join('');
+        item.draggable = true;
+        item.dataset.index = index;
 
         item.innerHTML = `
+          <span class="drag-handle" title="Перетягнути">⠿</span>
           <button class="task-status ${meta.cls}" data-index="${index}">${meta.label}</button>
           <input type="text" value="${escapeHtml(task.text)}" readonly>
-          <button class="task-delete-btn" onclick="deleteTask(${index})">✕</button>
+          <button class="task-delete-btn" data-index="${index}">✕</button>
         `;
 
-        // Відкриття глобального дропдауну
+        // Статус дропдаун
         const statusBtn = item.querySelector('.task-status');
         statusBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           openStatusDropdown(statusBtn, index);
         });
 
+        // Видалення
+        item.querySelector('.task-delete-btn').addEventListener('click', () => deleteTask(index));
+
         // Редагування тексту
         const textInput = item.querySelector('input[type="text"]');
         textInput.addEventListener('click', () => { textInput.readOnly = false; textInput.focus(); });
-        textInput.addEventListener('blur',  () => {
+        textInput.addEventListener('blur', () => {
           notesData.tasks[index].text = textInput.value;
           textInput.readOnly = true;
           saveNotes();
         });
         textInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') textInput.blur(); });
+
+        // ===== DRAG & DROP =====
+        item.addEventListener('dragstart', (e) => {
+          e.dataTransfer.effectAllowed = 'move';
+          e.dataTransfer.setData('text/plain', index);
+          setTimeout(() => item.classList.add('dragging'), 0);
+        });
+
+        item.addEventListener('dragend', () => {
+          item.classList.remove('dragging');
+          container.querySelectorAll('.task-item').forEach(el => el.classList.remove('drag-over'));
+        });
+
+        item.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          container.querySelectorAll('.task-item').forEach(el => el.classList.remove('drag-over'));
+          item.classList.add('drag-over');
+        });
+
+        item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
+
+        item.addEventListener('drop', (e) => {
+          e.preventDefault();
+          item.classList.remove('drag-over');
+          const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+          const toIndex   = parseInt(item.dataset.index);
+          if (fromIndex === toIndex) return;
+          // Переміщуємо елемент масиву
+          const moved = notesData.tasks.splice(fromIndex, 1)[0];
+          notesData.tasks.splice(toIndex, 0, moved);
+          renderTasks(notesData.tasks);
+          saveNotes();
+        });
 
         container.appendChild(item);
       });
@@ -3048,6 +3156,14 @@ ${link}`
 
     document.getElementById('openSettingsBtn').addEventListener('click', () => {
       settingsOverlay.classList.add('open');
+    });
+
+    document.getElementById('openInfoBtn').addEventListener('click', () => {
+      document.getElementById('infoOverlay').style.display = 'flex';
+    });
+    document.getElementById('infoOverlay').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('infoOverlay'))
+        document.getElementById('infoOverlay').style.display = 'none';
     });
 
     document.getElementById('closeSettingsBtn').addEventListener('click', () => {
